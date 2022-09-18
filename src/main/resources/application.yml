@@ -1,0 +1,43 @@
+server:
+    port: 8894
+
+# 金融的接口
+commonApi:
+#    entity_classify_url: "http://192.168.1.6:12345/EntityGraphRest"
+#    relation_classify_url: "http://192.168.1.6:12346/RelationGraphRest"
+#    entity_similarity_url: "http://192.168.1.6:6668/wordSimilarity"
+
+    entity_classify_url: "http://1.15.87.83:12345/EntityGraphRest"
+    relation_classify_url: "http://1.15.87.83:12346/RelationGraphRest"
+    entity_similarity_url: "http://1.15.87.83:6668/wordSimilarity"
+    useWho: 0 #默认为0,0为上理，1为后续调用金融服务接口
+    DatabaseChose: 0    #废弃不用，修改数据库源连接信息即可切换数据库
+spring:
+    mysql: #mysql数据源
+#        driver-class-name: com.kingbase8.Driver #数据库驱动
+#        url: jdbc:kingbase8://localhost:54321/zsfw  # 数据库的 JDBC URL
+#        username: root   #数据库的登录用户名
+#        password: root    #数据库的登录密码
+        driver-class-name: com.mysql.cj.jdbc.Driver #数据库驱动
+        url: jdbc:mysql://localhost:3306/isoft-kg?serverTimezone=Asia/Shanghai  # 数据库的 JDBC URL
+        username: root   #数据库的登录用户名
+        password: djh000   #数据库的登录密码
+        
+        initialSize: 5 #初始化时获取的连接数量
+        minIdle: 10 #最小空闲连接数量
+        maxActive: 20 #最大连接数量
+        maxWait: 3000 #获取连接的最长等待时间，单位毫秒
+        timeBetweenEvictionRunsMillis: 600000 #每次检查所有空闲连接的最小时间间隔，单位毫秒
+        minEvictableIdleTimeMillis: 600000 #连接在连接池中最小生存时间，单位毫秒
+        
+    neo4j: #neo4j图数据库配置
+        username: neo4j
+        password: abc123
+        uri: bolt://localhost:44440
+        maxConnectionPoolSize: 100
+
+logging:
+    level:
+        com.usst.kgfusion.controller: debug
+        com.usst.kgfusion.entrance: warn
+        com.usst.kgfusion.databaseQuery: debug
