@@ -140,7 +140,7 @@ public class MergeController {
 
                 record.put("analyse_msg", "分析完成，未分析到可综合节点对");
 
-                record.put("synthesize_status", Integer.toString(3));
+                record.put("synthesize_status", Integer.toString(2));
                 if(res.containsKey("synthesize_begin_time")){
                     record.put("synthesize_begin_time", res.get("synthesize_begin_time")+"");
                 }
