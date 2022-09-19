@@ -870,6 +870,7 @@ public class MergeAuto {
 
         // copy subGraph 需要正式合并的时候才需要的操作
         Map<Integer, Integer> sourceCopyIdMap = BasicOperation.copySubgraphAccSimMap(simMap_int);
+        logger.info("复制文档图谱可综合节点-创建为综合图谱节点-完成");
         Map<Integer, List<Integer>> resSimMap = new HashMap<>();
         for(Map.Entry<Integer, List<Integer>> entry: simMap_int.entrySet()){
             Integer des = entry.getKey();
@@ -882,6 +883,7 @@ public class MergeAuto {
             }
         }
 
+        //修改复制图谱的graphSymbol
         Map<Integer, Map<String, String>> updateInfo_gsb = new HashMap<>();
         for(Integer copyId: sourceCopyIdMap.values()){  // 源图谱中相似点复制出来连通子图的点
             Map<String, String> updateInfo_id = new HashMap<>();
@@ -889,52 +891,16 @@ public class MergeAuto {
             updateInfo_gsb.put(copyId, updateInfo_id);
         }
         BasicOperation.updataByids(updateInfo_gsb);
+        logger.info("修改复制文档图谱可综合节点的symbol为综合图谱节点-完成");
 
-        // construct update info
-        // for destination
-//        for(Integer id: resSimMap.keySet()) {
-//
-//            //srcId
-////            Map<String, String> updateInfo_srcId = new HashMap<>();
-////            String srcid = simMap_int.get(id).toString().replaceAll(" ", ""); // 源节点
-////            updateInfo_srcId.put("srcId", srcid);
-////            updateInfo.put(id, updateInfo_srcId);
-//
-//            //srcIds
-//            Map<String, String> updateInfo_srcIds = new HashMap<>();
-//
-//            List<Integer> srcids_list = simMap_int.get(id);
-//            Boolean isNull = BasicOperation.judgingSrcIds(id);
-//            if(isNull == true){
-//                updateInfo_srcIds.put("srcIds", srcids_list.toString().replaceAll(" ", ""));
-//            }else{
-//                List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
-//                scrId_init.addAll(srcids_list);
-//                updateInfo_srcIds.put("srcIds", scrId_init.toString().replaceAll(" ", ""));
-//            }
-//            updateInfo.put(id, updateInfo_srcIds);
-//
-////            Map<String, String> updateInfo_id = new HashMap<>();
-////            Map<String, String> updateInfo_id2 = new HashMap<>();
-////            String srcs = simMap_int.get(id).toString(); // 源节点
-////            List<Integer> idss = simMap_int.get(id);
-////            String ids2 = null;
-////            for(int i=0;i<idss.size();i++){
-////                ids2 = ids2 + idss.get(i).toString() + ",";
-////            }
-////            updateInfo_id.put("srcId", srcs);
-////            updateInfo_id2.put("srcIds", ids2);
-////
-////            updateInfo.put(id, updateInfo_id);
-////            updateInfo.put(id, updateInfo_id2);
-//        }
-
+        // 修改srcids
         Map<Integer, Map<String, String>> updateInfo_src = new HashMap<>();
         for(Integer id: simMap_int.keySet()) {
             //srcIds
             Map<String, String> updateInfo_srcIds = new HashMap<>();
             List<Integer> srcids_list = simMap_int.get(id);
             Boolean isNull = BasicOperation.judgingSrcIds(id);
+
             List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
             if(isNull == true || scrId_init.size()==0 || scrId_init==null || scrId_init.equals(null)){
                 updateInfo_srcIds.put("srcIds", srcids_list.toString().replaceAll(" ", ""));
@@ -959,10 +925,6 @@ public class MergeAuto {
         if(updateInfo_src.size()>0){
             BasicOperation.updataByids(updateInfo_src);  // 更新scrids
         }
-
-
-
-        // 非·此时更新了综合图谱上的所有点，包括合并点，和相似点摘下来的子图
         logger.info("修改ScrIds完成");
 
 
@@ -1077,9 +1039,7 @@ public class MergeAuto {
         }
 
 
-        logger.info("复制文档图谱可综合节点-创建为综合图谱节点-完成");
-
-        BasicOperation.mergeNodes(resSimMap);  // 先不合并
+        BasicOperation.mergeNodes(resSimMap);  // 合并
         logger.info("综合图谱节点更新完成");
 
 
@@ -1143,6 +1103,7 @@ public class MergeAuto {
 
         //修改综合图谱的relation.graphSymbol
         BasicOperation.setPropertyRelation(destination);
+
         res.put("synthesize_end_time", new Timestamp(System.currentTimeMillis()));
         logger.info("neo4j数据库操作完成");
         logger.info("综合结果已更新");
@@ -1351,6 +1312,9 @@ public class MergeAuto {
         for(Integer id: simMap_int.keySet()) {
             Map<String, String> updateInfo_itemIds = new HashMap<>();
             String aim_itemids = BasicOperation.GetitemIds(id);
+            if(aim_itemids==null){
+                aim_itemids = Bemerged_itemidsjson.get(simMap_int.get(id).get(0)).toString();
+            }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
                 List<Object> aim_res = new ArrayList<>();
@@ -1401,6 +1365,9 @@ public class MergeAuto {
         for(Integer id: simMap_int.keySet()) {
             String aim_itemids = BasicOperation.GetitemIds(id);
             Map<String, String> updateInfo_itemIds = new HashMap<>();
+            if(aim_itemids==null){
+                aim_itemids = Bemerged_itemidsjson.get(simMap_int.get(id).get(0)).toString();
+            }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
                 List<Integer> srcids_list = simMap_int.get(id);
@@ -1430,31 +1397,52 @@ public class MergeAuto {
 
 
 
-        if(aimisnull_flag){
-            BasicOperation.mergeNodes_AimNull(simMap_int);
-        }else{
-            BasicOperation.mergeNodes(simMap_int);
-        }
+//        if(aimisnull_flag){
+//            BasicOperation.mergeNodes_AimNull(simMap_int);
+//        }else{
+//            BasicOperation.mergeNodes(simMap_int);
+//        }
+        BasicOperation.mergeNodes(simMap_int);
         logger.info("待处置歧义节点合并置目标节点完成");
 
 
         //更新json自带属性
-        Map<Integer, Map<String, String>> updateInfo = new HashMap<>();
+        Map<Integer, Map<String, String>> updateInfo_string = new HashMap<>();
+        Map<Integer, Map<String, Integer>> updateInfo_int = new HashMap<>();
+        Map<Integer, Map<String, Double>> updateInfo_double = new HashMap<>();
         if(aim_update.length()>0){
             String[] sum_1 = aim_update.split(";");
             for(int i =0;i< sum_1.length;i++){
                 String[] sum_2 = sum_1[i].split(":",2);
                 String key1 = sum_2[0];
                 String v_all = sum_2[1];
-                Map<String,String> tempm = updateInfo.getOrDefault(Integer.parseInt(aim_id),new HashMap<>());
-                tempm.put(key1,v_all);
-                updateInfo.put(Integer.parseInt(aim_id),tempm);
-
+                if(key1.contains("nodeCategory") || key1.contains("graphCategory") || key1.contains("graphType") || key1.contains("graphLevel")){
+                    Map<String,Integer> tempm_int = updateInfo_int.getOrDefault(Integer.parseInt(aim_id),new HashMap<>());
+                    tempm_int.put(key1,Integer.parseInt(v_all));
+                    updateInfo_int.put(Integer.parseInt(aim_id),tempm_int);
+                }else if(key1.contains("dataConfidence")){
+                    Map<String,Double> tempm_double = updateInfo_double.getOrDefault(Integer.parseInt(aim_id),new HashMap<>());
+                    tempm_double.put(key1,Double.parseDouble(v_all));
+                    updateInfo_double.put(Integer.parseInt(aim_id),tempm_double);
+                }else{
+                    Map<String,String> tempm_string= updateInfo_string.getOrDefault(Integer.parseInt(aim_id),new HashMap<>());
+                    tempm_string.put(key1,v_all);
+                    updateInfo_string.put(Integer.parseInt(aim_id),tempm_string);
+                }
             }
 
         }
-        BasicOperation.updataByids(updateInfo);//修改属性
-        //BasicOperation.updataByidInteger(updateTag);
+        if(updateInfo_string.size()>0){
+            BasicOperation.updataByids(updateInfo_string);//修改属性
+        }
+        if(updateInfo_double.size()>0){
+            BasicOperation.updataByidDouble(updateInfo_double);
+        }
+        if(updateInfo_int.size()>0){
+            BasicOperation.updataByidInteger(updateInfo_int);
+        }
+
+
         logger.info("修改目标节点属性信息完成");
 
         //更新scrIds
@@ -1464,11 +1452,11 @@ public class MergeAuto {
             Map<String, String> updateInfo_srcIds = new HashMap<>();
             List<Integer> srcids_list = simMap_int.get(id);
             Boolean isNull = BasicOperation.judgingSrcIds(id);
-            if(isNull == true){
+            List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
+            if(isNull == true || scrId_init.size()==0 || scrId_init==null || scrId_init.equals(null)){
                 updateInfo_srcIds.put("srcIds", srcids_list.toString().replaceAll(" ", ""));
             }else{
                 List<Integer> new_list = new ArrayList<>();
-                List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
                 for(int src_i:scrId_init){
                     if(!new_list.contains(src_i)){
                         new_list.add(src_i);
@@ -1480,14 +1468,15 @@ public class MergeAuto {
                     }
                 }
 
-
                 updateInfo_srcIds.put("srcIds", new_list.toString().replaceAll(" ", ""));
             }
             Map<String,String> templ = updateInfo_src.getOrDefault(id,new HashMap<>());
             templ.putAll(updateInfo_srcIds);
             updateInfo_src.put(id, templ);
         }
-        BasicOperation.updataByids(updateInfo_src);//修改srcids
+        if(updateInfo_src.size()>0){
+            BasicOperation.updataByids(updateInfo_src);//修改srcids
+        }
 
 
 

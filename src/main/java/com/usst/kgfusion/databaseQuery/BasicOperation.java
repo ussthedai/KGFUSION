@@ -466,7 +466,8 @@ public class BasicOperation{
         }
 
         List<Integer> res = new ArrayList<>();
-        if(records.size()==0){
+        Map<String, Object> a1 = records.get(0).asMap();
+        if(records.size()==0 ||records.get(0).asMap().get("ids")==null){
             return res;
         }else {
             String init_ids = records.get(0).asMap().get("ids").toString();
@@ -824,6 +825,24 @@ public class BasicOperation{
             for (String proName: propInfo.keySet()){
                 int newValue = propInfo.get(proName);
                 transaction.run(String.format("match (n) where id(n) = %d set n.%s=%d", id, proName, newValue));
+
+            }
+        }
+        transaction.success();
+        session.close();
+        // driver.close();
+    }
+
+    public static void updataByidDouble(Map<Integer, Map<String, Double>> updateInfo){
+        Driver driver = Neo4jUtils.getDriver();
+        Session session = driver.session();
+        Transaction transaction = session.beginTransaction();
+        for (Entry<Integer, Map<String, Double>> entry: updateInfo.entrySet()){
+            Integer id = entry.getKey();
+            Map<String, Double> propInfo = entry.getValue();
+            for (String proName: propInfo.keySet()){
+                double newValue = propInfo.get(proName);
+                transaction.run(String.format("match (n) where id(n) = %d set n.%s=%f ", id, proName, newValue));
 
             }
         }
