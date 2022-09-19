@@ -470,6 +470,16 @@ public class BasicOperation{
             return res;
         }else {
             String init_ids = records.get(0).asMap().get("ids").toString();
+            int count_kuohao = 0;
+            for(int len=0;len<init_ids.length();len++){
+                char a = init_ids.charAt(len);
+                if(a=='['){
+                    count_kuohao++;
+                }
+            }
+            if(count_kuohao>1){
+                return res;
+            }
             init_ids = init_ids.replaceAll("\\[", "");
             init_ids = init_ids.replaceAll("\\]", "");
             init_ids = init_ids.replaceAll("null", "");
@@ -509,6 +519,9 @@ public class BasicOperation{
                 return null;
             }
             String init_ids = records.get(0).asMap().get("ids").toString();
+            if(init_ids.length()==0){
+                return null;
+            }
 
             return init_ids;
         }

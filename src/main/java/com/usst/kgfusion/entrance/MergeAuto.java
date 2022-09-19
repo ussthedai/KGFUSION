@@ -518,14 +518,19 @@ public class MergeAuto {
             Map<String, String> updateInfo_srcIds = new HashMap<>();
             List<Integer> srcids_list = simMap_int.get(id);
             Boolean isNull = BasicOperation.judgingSrcIds(id);
-            if(isNull == true){
+            List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
+            if(isNull == true || scrId_init.size()==0 || scrId_init==null){
                 updateInfo_srcIds.put("srcIds", srcids_list.toString().replaceAll(" ", ""));
             }else{
-                List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
-                scrId_init.addAll(srcids_list);
-                updateInfo_srcIds.put("srcIds", scrId_init.toString().replaceAll(" ", ""));
+                if(scrId_init.size()>0){
+                    scrId_init.addAll(srcids_list);
+                    updateInfo_srcIds.put("srcIds", scrId_init.toString().replaceAll(" ", ""));
+                }
+
             }
-            updateInfo.put(id, updateInfo_srcIds);
+            if(updateInfo_srcIds.size()>0){
+                updateInfo.put(id, updateInfo_srcIds);
+            }
 
 //            Map<String, String> updateInfo_id = new HashMap<>();
 //
@@ -877,10 +882,16 @@ public class MergeAuto {
             }
         }
 
+        Map<Integer, Map<String, String>> updateInfo_gsb = new HashMap<>();
+        for(Integer copyId: sourceCopyIdMap.values()){  // 源图谱中相似点复制出来连通子图的点
+            Map<String, String> updateInfo_id = new HashMap<>();
+            updateInfo_id.put("graphSymbol", destination);
+            updateInfo_gsb.put(copyId, updateInfo_id);
+        }
+        BasicOperation.updataByids(updateInfo_gsb);
 
         // construct update info
         // for destination
-        Map<Integer, Map<String, String>> updateInfo_src = new HashMap<>();
 //        for(Integer id: resSimMap.keySet()) {
 //
 //            //srcId
@@ -917,16 +928,18 @@ public class MergeAuto {
 ////            updateInfo.put(id, updateInfo_id);
 ////            updateInfo.put(id, updateInfo_id2);
 //        }
+
+        Map<Integer, Map<String, String>> updateInfo_src = new HashMap<>();
         for(Integer id: simMap_int.keySet()) {
             //srcIds
             Map<String, String> updateInfo_srcIds = new HashMap<>();
             List<Integer> srcids_list = simMap_int.get(id);
             Boolean isNull = BasicOperation.judgingSrcIds(id);
-            if(isNull == true){
+            List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
+            if(isNull == true || scrId_init.size()==0 || scrId_init==null || scrId_init.equals(null)){
                 updateInfo_srcIds.put("srcIds", srcids_list.toString().replaceAll(" ", ""));
             }else{
                 List<Integer> new_list = new ArrayList<>();
-                List<Integer> scrId_init = BasicOperation.GetSrcIds(id);
                 for(int src_i:scrId_init){
                     if(!new_list.contains(src_i)){
                         new_list.add(src_i);
@@ -937,15 +950,15 @@ public class MergeAuto {
                         new_list.add(src_t);
                     }
                 }
-
-
                 updateInfo_srcIds.put("srcIds", new_list.toString().replaceAll(" ", ""));
             }
             Map<String,String> templ = updateInfo_src.getOrDefault(id,new HashMap<>());
             templ.putAll(updateInfo_srcIds);
             updateInfo_src.put(id, templ);
         }
-        BasicOperation.updataByids(updateInfo_src);  // 更新scrids
+        if(updateInfo_src.size()>0){
+            BasicOperation.updataByids(updateInfo_src);  // 更新scrids
+        }
 
 
 
@@ -1062,13 +1075,7 @@ public class MergeAuto {
                 sourceSimNodes.add(item);
             }
         }
-        Map<Integer, Map<String, String>> updateInfo_gsb = new HashMap<>();
-        for(Integer copyId: sourceCopyIdMap.values()){  // 源图谱中相似点复制出来连通子图的点
-            Map<String, String> updateInfo_id = new HashMap<>();
-            updateInfo_id.put("graphSymbol", destination);
-            updateInfo_gsb.put(copyId, updateInfo_id);
-        }
-        BasicOperation.updataByids(updateInfo_gsb);
+
 
         logger.info("复制文档图谱可综合节点-创建为综合图谱节点-完成");
 
