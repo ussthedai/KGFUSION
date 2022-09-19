@@ -134,7 +134,7 @@ public class MergeAuto {
             logger.info("综合分析已确认：只使用上理接口");
             logger.info("综合分析开始");
             SimGuiZe sg = new SimGuiZe();
-            simMap_merge = sg.All_sim(destination,from);
+            simMap_merge = sg.All_sim(destination,from,0);
 //            KGsMergeBasedOnContent kgm = new KGsMergeBasedOnContent(kgs,from,destination);
 //            Map<String, Object> res_step1 = kgm.entrance();
             logger.info("综合分析已结束");
@@ -703,7 +703,7 @@ public class MergeAuto {
             logger.info("自动综合分析已确认：只使用上理接口");
             logger.info("综合分析开始");
             SimGuiZe sg = new SimGuiZe();
-            simMap_merge = sg.All_sim(destination,from);
+            simMap_merge = sg.All_sim(destination,from,0);
 
 //            KGsMergeBasedOnContent kgm = new KGsMergeBasedOnContent(kgs,from,destination);
 //            Map<String, Object> res_step1 = kgm.entrance();
@@ -1188,7 +1188,7 @@ public class MergeAuto {
 
         logger.info("词语歧义分析开始");
         SimGuiZe sg = new SimGuiZe();
-        simMap_merge = sg.All_sim(symbol,symbol);
+        simMap_merge = sg.All_sim(symbol,symbol,1);
 
         String create_time = new Timestamp(System.currentTimeMillis()).toString();
 

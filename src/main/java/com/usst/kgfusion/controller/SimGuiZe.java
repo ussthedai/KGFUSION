@@ -325,7 +325,9 @@ public class SimGuiZe {
 
 
     // !!!todo 相似度合并
-    public Map<String, List<String>> All_sim(String des,String source) {
+    public Map<String, List<String>> All_sim(String des,String source,int flag ) {
+
+        //flag 0为综合 1为歧义
 
         Map<String, Double> guizeMap = KGASSETOperation.read_guizequanzhong();  // 每种规则的的权重
         if(guizeMap==null){
@@ -333,10 +335,19 @@ public class SimGuiZe {
         }
 
         double sim_value = -1.0;
-        if(guizeMap.get("阈值")!=null && !guizeMap.get("阈值").equals("null")){
+        if(flag == 0){
+            if(guizeMap.get("自动综合相似阈值")!=null && !guizeMap.get("自动综合相似阈值").equals("null")){
 
-            sim_value = guizeMap.get("阈值");
+                sim_value = guizeMap.get("自动综合相似阈值");
+            }
         }
+        if(flag == 1){
+            if(guizeMap.get("歧义分析阈值")!=null && !guizeMap.get("歧义分析阈值").equals("null")){
+
+                sim_value = guizeMap.get("歧义分析阈值");
+            }
+        }
+
         if(sim_value == -1.0){
             sim_value = 0.5;
         }
