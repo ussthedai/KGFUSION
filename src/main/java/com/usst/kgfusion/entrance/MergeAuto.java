@@ -950,6 +950,20 @@ public class MergeAuto {
         for(Integer id: resSimMap.keySet()) {
             Map<String, String> updateInfo_itemIds = new HashMap<>();
             String aim_itemids = BasicOperation.GetitemIds(id);
+            if(aim_itemids==null){
+                String a_str = null;
+                List<Integer> temp_bemergedlist = simMap_int.get(id);
+                for(Integer a: temp_bemergedlist){
+                    if(Bemerged_itemidsjson.get(a)!=null){
+                        a_str = Bemerged_itemidsjson.get(a).toString();
+                        aim_itemids = a_str;
+                        continue;
+                    }
+                }
+                if(aim_itemids==null){
+                    continue;
+                }
+            }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
                 List<Object> aim_res = new ArrayList<>();
@@ -1000,6 +1014,20 @@ public class MergeAuto {
         for(Integer id: resSimMap.keySet()) {
             String aim_itemids = BasicOperation.GetitemIds(id);
             Map<String, String> updateInfo_itemIds = new HashMap<>();
+            if(aim_itemids==null){
+                String a_str = null;
+                List<Integer> temp_bemergedlist = simMap_int.get(id);
+                for(Integer a: temp_bemergedlist){
+                    if(Bemerged_itemidsjson.get(a)!=null){
+                        a_str = Bemerged_itemidsjson.get(a).toString();
+                        aim_itemids = a_str;
+                        continue;
+                    }
+                }
+                if(aim_itemids==null){
+                    continue;
+                }
+            }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
 
@@ -1313,7 +1341,18 @@ public class MergeAuto {
             Map<String, String> updateInfo_itemIds = new HashMap<>();
             String aim_itemids = BasicOperation.GetitemIds(id);
             if(aim_itemids==null){
-                aim_itemids = Bemerged_itemidsjson.get(simMap_int.get(id).get(0)).toString();
+                String a_str = null;
+                List<Integer> temp_bemergedlist = simMap_int.get(id);
+                for(Integer a: temp_bemergedlist){
+                    if(Bemerged_itemidsjson.get(a)!=null){
+                        a_str = Bemerged_itemidsjson.get(a).toString();
+                        aim_itemids = a_str;
+                        continue;
+                    }
+                }
+                if(aim_itemids==null){
+                    continue;
+                }
             }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
@@ -1366,7 +1405,18 @@ public class MergeAuto {
             String aim_itemids = BasicOperation.GetitemIds(id);
             Map<String, String> updateInfo_itemIds = new HashMap<>();
             if(aim_itemids==null){
-                aim_itemids = Bemerged_itemidsjson.get(simMap_int.get(id).get(0)).toString();
+                String a_str = null;
+                List<Integer> temp_bemergedlist = simMap_int.get(id);
+                for(Integer a: temp_bemergedlist){
+                    if(Bemerged_itemidsjson.get(a)!=null){
+                        a_str = Bemerged_itemidsjson.get(a).toString();
+                        aim_itemids = a_str;
+                        continue;
+                    }
+                }
+                if(aim_itemids==null){
+                    continue;
+                }
             }
             if(aim_itemids!=null){
                 List<Object> aim_itemids_list = JSONArray.parseArray(aim_itemids);
