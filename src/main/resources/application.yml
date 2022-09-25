@@ -19,10 +19,10 @@ spring:
 #        username: root   #数据库的登录用户名
 #        password: root    #数据库的登录密码
         driver-class-name: com.mysql.cj.jdbc.Driver #数据库驱动
-        url: jdbc:mysql://localhost:44420/isoft-kg?serverTimezone=Asia/Shanghai  # 数据库的 JDBC URL
+        url: jdbc:mysql://localhost:3306/isoft-kg?serverTimezone=Asia/Shanghai  # 数据库的 JDBC URL
         username: root   #数据库的登录用户名
-        password: abc123   #数据库的登录密码
-#        password: djh000   #数据库的登录密码
+        # password: abc123   #数据库的登录密码
+        password: djh000   #数据库的登录密码
         
         initialSize: 5 #初始化时获取的连接数量
         minIdle: 10 #最小空闲连接数量

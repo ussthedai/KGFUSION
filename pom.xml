@@ -12,6 +12,9 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>kgfusion</name>
     <description>Demo project for Spring Boot</description>
+
+    <packaging>war</packaging> <!-- 项目打包方式 -->
+
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -25,6 +28,18 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <!-- 忽略内置tomcat-->
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
 
         <dependency>
@@ -33,6 +48,7 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+
 
         <dependency>
             <groupId>com.hankcs</groupId>
@@ -164,6 +180,8 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <finalName>kgfusion</finalName> <!-- 生成的包名 -->
     </build>
 
 </project>
