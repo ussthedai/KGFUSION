@@ -1,6 +1,6 @@
 package com.usst.kgfusion.entrance;
 
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.pojo.Triple;
 import org.checkerframework.framework.qual.LiteralKind;
@@ -34,9 +34,9 @@ public class JaccardMethod {
         this.kg = kg;
     }
 
-    public Map<Entity,List<Entity>> getSameEntitys(Entity en1,List<Entity> entityList) {
-        Map<Entity,List<Entity>> res = new HashMap<>();
-        List<Entity> res2 = new ArrayList<>();
+    public Map<EntityRaw,List<EntityRaw>> getSameEntitys(EntityRaw en1,List<EntityRaw> entityList) {
+        Map<EntityRaw,List<EntityRaw>> res = new HashMap<>();
+        List<EntityRaw> res2 = new ArrayList<>();
         res2.add(en1);
         for(int a =0 ;a <entityList.size();a++){
             if(en1.getName().equals(entityList.get(a).getName())){
@@ -51,13 +51,13 @@ public class JaccardMethod {
         return res;
     }
 
-    public Set<String> getEntityNeighbor(Entity en , List<Triple> synTriples) {
+    public Set<String> getEntityNeighbor(EntityRaw en , List<Triple> synTriples) {
         Set<String> res = new HashSet<>();
         Set<String> neighbor = new HashSet<>();
         neighbor.add(en.getEntityId());
         for(int a =0 ;a <synTriples.size();a++){
-            Entity head = synTriples.get(a).getHead();
-            Entity tail = synTriples.get(a).getTail();
+            EntityRaw head = synTriples.get(a).getHead();
+            EntityRaw tail = synTriples.get(a).getTail();
             if(head.equals(en) && !tail.equals(en)){
                 if(!neighbor.contains(tail.getEntityId())){
                     res.add(tail.getEntityId());
@@ -94,7 +94,7 @@ public class JaccardMethod {
     public Map<String,Object> entrance(float EX_score,String task_id) {
         KG synKG = getKg();
         List<Triple> synTriples = synKG.getTriples();
-        List<Entity> synEntitys = synKG.getEntities();
+        List<EntityRaw> synEntitys = synKG.getEntities();
         Map<String,Object> res = new HashMap<>();
         Set<String> nameList = new HashSet<>();
 
@@ -104,8 +104,8 @@ public class JaccardMethod {
         for(int i=0;i<synEntitys.size();i++){
             if(!nameList.contains(synEntitys.get(i).getName())){
                 nameList.add(synEntitys.get(i).getName());
-                Map<Entity,List<Entity>> SameNameList = getSameEntitys(synEntitys.get(i),synEntitys);
-                List<Entity> te1 = SameNameList.get(synEntitys.get(i));
+                Map<EntityRaw,List<EntityRaw>> SameNameList = getSameEntitys(synEntitys.get(i),synEntitys);
+                List<EntityRaw> te1 = SameNameList.get(synEntitys.get(i));
                 if(SameNameList.size()>0){
                     Set<String> en1_set = getEntityNeighbor(te1.get(0),synTriples);
                     String en1_type = te1.get(0).getEntityType();

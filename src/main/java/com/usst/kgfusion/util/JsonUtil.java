@@ -1,22 +1,21 @@
 package com.usst.kgfusion.util;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JsonUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger("com.usst.test");
+
     public static String readJsonStr(InputStream in) throws IOException{
         
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
         int ch = 0;
         try{
@@ -25,7 +24,14 @@ public class JsonUtil {
         }catch(IOException e){
             throw e;
         }finally{
-            if(br != null) br.close();
+            
+            if(br != null) 
+            try{
+                br.close();
+            }catch(IOException e){
+                logger.error("failed to close file");
+            }
+            
         }
 
         return sb.toString();

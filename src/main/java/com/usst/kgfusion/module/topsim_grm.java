@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.pojo.Triple;
 
@@ -109,9 +109,9 @@ public class topsim_grm {
     }
 
     //    给定id 输出实体的type
-    public  String getType(List<Entity> entityList, int entityID){
+    public  String getType(List<EntityRaw> entityList, int entityID){
         String entityType=null;
-        for(Entity entity:entityList){
+        for(EntityRaw entity:entityList){
             if(Integer.parseInt(entity.getEntityId())==entityID){
 //                entityType=entity.getTypeId();
                 entityType=entity.getEntityType();
@@ -121,10 +121,10 @@ public class topsim_grm {
     }
 
     //返回一个给定集合，返回集合中属于某类型的节点个数
-    public int getTypeNum(Set<Integer> outDegree1,List<Entity> entityList,String typej){
+    public int getTypeNum(Set<Integer> outDegree1,List<EntityRaw> entityList,String typej){
         int typeNum=1;
         for(Integer entityId:outDegree1){
-            for(Entity entity:entityList){
+            for(EntityRaw entity:entityList){
                 if(entityId==Integer.parseInt(entity.getEntityId())){
                     if(entity.getEntityType().equals(typej)){
                         typeNum+=1;
@@ -135,7 +135,7 @@ public class topsim_grm {
         return typeNum;
     }
     //给定int类型的两个实体 返回实体之间的关系重要性值
-    public double getRw(Map<String, Map<String, Double>> rwScoreMap,int id1,int id2,List<Entity> entityList){
+    public double getRw(Map<String, Map<String, Double>> rwScoreMap,int id1,int id2,List<EntityRaw> entityList){
         double sc=0.0;
         String type1=getType(entityList,id1);
         String type2=getType(entityList,id2);
@@ -164,7 +164,7 @@ public class topsim_grm {
 //调用方法 生成入度和出度的map
         KG kg= (KG) res.get("kg");
         HashMap<String,List<String>> querynodes= (HashMap<String, List<String>>) res.get("queryNodes");
-        List<Entity> entitiesList = kg.getEntities();//获取融合后的所有实体
+        List<EntityRaw> entitiesList = kg.getEntities();//获取融合后的所有实体
         Map<Integer, Set<Integer>> IndDegreeMap=InDegreeMap(kg);
         Map<Integer, Set<Integer>> OutDegreeMap=OutDegreeMap(kg);
         Map<String, Map<String, Double>> rwScoreMap= GRM.geRw(kg);

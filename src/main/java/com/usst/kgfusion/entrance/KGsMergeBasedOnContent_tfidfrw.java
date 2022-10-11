@@ -43,11 +43,11 @@ public class KGsMergeBasedOnContent_tfidfrw {
     public KG mergeProcess(List<KG> kgs,HashMap<String,List<String>> Sim_entityids) throws IOException {
 
         //0.前期数据处理，此阶段为获取entitylist和triplelist;
-        List<Entity> tempentitys = new ArrayList<Entity>();
+        List<EntityRaw> tempentitys = new ArrayList<EntityRaw>();
         List<Triple> temptriples = new ArrayList<Triple>();
 
-        List<Entity> entitys = new ArrayList<Entity>();//entitylist集合用于修改
-        List<Entity> entitys1 = new ArrayList<Entity>();//entitylist集合用于查询元素（不修改）
+        List<EntityRaw> entitys = new ArrayList<EntityRaw>();//entitylist集合用于修改
+        List<EntityRaw> entitys1 = new ArrayList<EntityRaw>();//entitylist集合用于查询元素（不修改）
 
         List<Triple> triples = new ArrayList<Triple>();
 
@@ -82,8 +82,8 @@ public class KGsMergeBasedOnContent_tfidfrw {
 
             for (int k = 0; k < ids.size(); k++) {
                 for (Triple triple : triples) {
-                    Entity entity1 = triple.getHead();
-                    Entity entity2 = triple.getTail();
+                    EntityRaw entity1 = triple.getHead();
+                    EntityRaw entity2 = triple.getTail();
                     if (entity2.getEntityId().equals(ids.get(k))) {//修改三元组
                         triple.setTail(MergeTool.findByEntityId(entitys1, entry.getKey()));
                     }
@@ -98,7 +98,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
 
         //1.2 通过记录的实体ID删除结点
         for (int iu = 0; iu < removeid.size(); iu++) {
-            for (Entity entity : entitys) {
+            for (EntityRaw entity : entitys) {
                 if (entity.getEntityId().equals(removeid.get(iu))) {
                     entitys.remove(entity);
                     break;
@@ -108,7 +108,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
         removeid.clear();//清空List，方便后续操作，以记录头尾实体相同的三元组的实体ID并删除。
 
         HashMap<String,Integer> triplemap = new HashMap<>();//将新生成的triple放入newtriples
-        for (Entity entity : entitys) {
+        for (EntityRaw entity : entitys) {
             triplemap.put(entity.getEntityId(), 1);
         }
         List<Integer> removelist=new ArrayList<>();//需删除的三元组ID list
@@ -138,7 +138,12 @@ public class KGsMergeBasedOnContent_tfidfrw {
             int count=0;
             for(Triple triple:triples){
                 if(triple.getHead().getEntityId().equals(removeid.get(iu))||triple.getTail().getEntityId().equals(removeid.get(iu))) {
-                    count++;
+                    if(count <= Integer.MAX_VALUE - 1){
+                        count++;
+                    }else{
+                        break;
+                    }
+                    // count++;
                 }
             }
             if(count>=1){
@@ -155,7 +160,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
             }
         }
         for (int iu = 0; iu < removeid.size(); iu++) {//通过记录的结点ID删除结点
-            for (Entity entity : entitys) {
+            for (EntityRaw entity : entitys) {
                 if (entity.getEntityId().equals(removeid.get(iu))) {
                     entitys.remove(entity);
                     break;
@@ -163,8 +168,8 @@ public class KGsMergeBasedOnContent_tfidfrw {
             }
         }
 
-        List<Entity> newNodes = new ArrayList<Entity>();//修改完成，将新的ENtity集合转成newnodelist
-        for (Entity entity : entitys) {
+        List<EntityRaw> newNodes = new ArrayList<EntityRaw>();//修改完成，将新的ENtity集合转成newnodelist
+        for (EntityRaw entity : entitys) {
             String nodeid = entity.getEntityId();
             String nodename = entity.getName();
             String typeid=entity.getEntityType();
@@ -172,7 +177,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
             String graphSym = entity.getGraphSymbol();
             String itemid = entity.getItemId();
             String srcid = entity.getSrcId();
-            Entity node = new Entity(nodeid, nodename,typeid,subclass,graphSym, itemid,srcid);
+            EntityRaw node = new EntityRaw(nodeid, nodename,typeid,subclass,graphSym, itemid,srcid);
             newNodes.add(node);
         }
 
@@ -194,11 +199,11 @@ public class KGsMergeBasedOnContent_tfidfrw {
 
         KG kg = new KG(newNodes,Quchong_triples);
         List<Triple> ts = kg.getTriples();
-        LinkedHashMap<Entity,List<Entity>> edges = new LinkedHashMap<>();
-        LinkedHashMap<Entity,List<Integer>> directions = new LinkedHashMap<>();
+        LinkedHashMap<EntityRaw,List<EntityRaw>> edges = new LinkedHashMap<>();
+        LinkedHashMap<EntityRaw,List<Integer>> directions = new LinkedHashMap<>();
         for(Triple triple:ts){
-            Entity head = triple.getHead();
-            Entity tail = triple.getTail();
+            EntityRaw head = triple.getHead();
+            EntityRaw tail = triple.getTail();
             if(edges.get(head)==null)edges.put(head,new ArrayList<>());
             if(edges.get(tail)==null)edges.put(tail,new ArrayList<>());
             if(directions.get(head)==null)directions.put(head,new ArrayList<>());
@@ -222,9 +227,9 @@ public class KGsMergeBasedOnContent_tfidfrw {
 
         public static Map<String,Map<String,Double>> ComputeTF(List<KG> kgs, List<Item> items) {
 
-            List<Entity> tempentitys = new ArrayList<Entity>();
+            List<EntityRaw> tempentitys = new ArrayList<EntityRaw>();
 
-            List<Entity> entitys = new ArrayList<Entity>();
+            List<EntityRaw> entitys = new ArrayList<EntityRaw>();
 
             for (KG kg : kgs) {
                 tempentitys = kg.getEntities();
@@ -233,7 +238,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
                 }
             }
 
-            for(Entity node:entitys){
+            for(EntityRaw node:entitys){
                 entityidname.put(node.getEntityId(),node.getName());
             }
 
@@ -243,11 +248,11 @@ public class KGsMergeBasedOnContent_tfidfrw {
             //条目ID，词ID，值
             Map<String, Double> idf = new HashMap<String, Double>();
 
-            for (Entity node : entitys) {//IDF
+            for (EntityRaw node : entitys) {//IDF
                 int D = items.size(); //总条目数目
                 int Dt = 0;// Dt为出现该实体的条目数目
                 for(Item item : items){
-                    if(item.getItemText().contains(node.getName())){
+                    if(item.getItemText().contains(node.getName()) && Dt <= Integer.MAX_VALUE - 1){
                         Dt++;
                     }
                 }
@@ -255,7 +260,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
                 idf.put(node.getEntityId(), idfvalue);
             }
 
-            for (Entity node :entitys){//TF * IDF
+            for (EntityRaw node :entitys){//TF * IDF
                 String nodename=node.getName();
                 for(Item item :items){
                     int count=0;
@@ -267,7 +272,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
 //                    }
                     for(int i=0;i<cutwords.size();i++){
                         //cutwords.removeAll(stopwords);
-                        if(cutwords.get(i).contains(nodename)){
+                        if(cutwords.get(i).contains(nodename) && count <= (Integer.MAX_VALUE - 1)){
                             count++;
                         }
                     }
@@ -310,13 +315,13 @@ public class KGsMergeBasedOnContent_tfidfrw {
             return simVal;
         }
 
-        public static Entity findByEntityId(List<Entity> entityList, String id){
-            for(Entity entity :entityList){
+        public static EntityRaw findByEntityId(List<EntityRaw> entityList, String id){
+            for(EntityRaw entity :entityList){
                 if(entity.getEntityId().equals(id)){
                     return entity;
                 }
             }
-            Entity entity1 = new Entity();
+            EntityRaw entity1 = new EntityRaw();
             System.out.println("none");
             return entity1;
         }
@@ -395,14 +400,19 @@ public class KGsMergeBasedOnContent_tfidfrw {
                     }else{
                         vector.add(temp.get(item));
                     }
-                    item++;
+                    if(item <= Integer.MAX_VALUE - 1){
+                        item++;
+                    }else{
+                        break;
+                    }
+                    // item++;
                 }
             }
             return vector;
         }
     } //计算TF-IDF,SVD,SIM
 
-    public Map<String,Object> entrance() throws Exception{
+    public Map<String,Object> entrance() throws IOException{
 
         List<KG> cleanedKGs = getCleanedKGs();
         String source = getsource_kgSymbol();
@@ -411,12 +421,12 @@ public class KGsMergeBasedOnContent_tfidfrw {
         HashMap<String,String> entityidname= new HashMap<>();
         HashMap<String,List<String>> Query_entityids = new HashMap<>();
         HashMap<String,List<String>> Sim_entityids = new HashMap<>();
-        List<Entity> sourcekg_entitys = new ArrayList<Entity>();
-        List<Entity> deskg_entitys = new ArrayList<Entity>();
+        List<EntityRaw> sourcekg_entitys = new ArrayList<EntityRaw>();
+        List<EntityRaw> deskg_entitys = new ArrayList<EntityRaw>();
         List<Item> rawDocuments = new ArrayList<>();
         List<Integer> queryids = new ArrayList<>();
 
-        List<Entity> tempentitys = new ArrayList<Entity>();//读取Entity列表
+        List<EntityRaw> tempentitys = new ArrayList<EntityRaw>();//读取Entity列表
         for (KG kg : cleanedKGs) {
             tempentitys = kg.getEntities();
             for (int i = 0; i < tempentitys.size(); i++) {
@@ -432,7 +442,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
         int itemidauto = 12344000;
         Set<String> itemids = new HashSet<>();
         Set<String> itemforname = new HashSet<>();
-        for(Entity node1:sourcekg_entitys){
+        for(EntityRaw node1:sourcekg_entitys){
             entityidname.put(node1.getEntityId(),node1.getName());
             //if(node1.getItemId().equals("null")){
                 itemforname.add(node1.getName());
@@ -440,7 +450,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
             //    itemids.add(node1.getItemId());
             //}
 
-            for(Entity node2:deskg_entitys){
+            for(EntityRaw node2:deskg_entitys){
                 entityidname.put(node2.getEntityId(),node2.getName());
                 //if(node2.getItemId().equals("null")){
                     itemforname.add(node2.getName());
@@ -490,6 +500,7 @@ public class KGsMergeBasedOnContent_tfidfrw {
         while(it1.hasNext()){
             Item newitem = new Item(String.valueOf(itemidauto),it1.next());
             rawDocuments.add(newitem);
+            if(itemidauto <= (Integer.MAX_VALUE - 1))
             itemidauto++;
         }
 

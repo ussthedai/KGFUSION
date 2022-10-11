@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class Entity {
+public class EntityRaw {
     private String entityId;
     private String name;
     private String entityType; // 实体粗类型 

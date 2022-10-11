@@ -41,14 +41,14 @@ public class RequestHelper {
         conn.setUseCaches(false);
         conn.connect();
         BufferedReader reader = null;
-        StringBuffer sb = null;
+        StringBuilder sb = null;
         try{
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             out.write(json.getBytes());
             out.flush();
             out.close();
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            sb = new StringBuffer();
+            sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null)
             {

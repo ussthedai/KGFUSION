@@ -1,6 +1,6 @@
 package com.usst.kgfusion.databaseQuery;
 
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.LevelAmbiguTaskRecord;
 import com.usst.kgfusion.pojo.LevelAmbiguTaskRes;
 import com.usst.kgfusion.util.KingBaseUtils;
@@ -169,10 +169,15 @@ public class KGASSETOperation {
                     st.setString(15, analyse_msg);
 
                     st.executeUpdate();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     logger.error("sql执行错误");
                 } finally {
-                    KingBaseUtils.close(st, conn);
+                    try{
+                        KingBaseUtils.close(st, conn);
+                    }catch(SQLException e){
+                        logger.error("release connection failed");
+                    }
+                    
                     //KingBaseUtils.close(st, conn);
                 }
             }
@@ -216,10 +221,16 @@ public class KGASSETOperation {
 //                    System.out.println(st);
 
                     st.executeUpdate();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     logger.error("sql执行错误");
                 } finally {
-                    KingBaseUtils.close(st, conn);
+                    try{
+                        KingBaseUtils.close(st, conn);
+                    }catch(SQLException e){
+                        logger.error("release connection failed");
+                    }
+                    
+                    
                     //KingBaseUtils.close(st, conn);
                 }
             }
@@ -312,10 +323,16 @@ public class KGASSETOperation {
                     st.setTimestamp(8, end_time_ts);
 
                     st.executeUpdate();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     logger.error("sql执行错误");
                 } finally {
-                    KingBaseUtils.close(st, conn);
+                    try{
+                        
+                        KingBaseUtils.close(st, conn);
+                    }catch(SQLException e){
+                        logger.error("release connection failed");
+                    }
+                    
                     //KingBaseUtils.close(st, conn);
                 }
             }else{
@@ -354,10 +371,15 @@ public class KGASSETOperation {
 //                    System.out.println(st);
 
                     st.executeUpdate();
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     logger.error("sql执行错误");
                 } finally {
-                    KingBaseUtils.close(st, conn);
+                    try{
+                        KingBaseUtils.close(st, conn);
+                    }catch(SQLException e){
+                        logger.error("release connection failed");
+                    }
+                    
                     //KingBaseUtils.close(st, conn);
                 }
             }
@@ -473,10 +495,15 @@ public class KGASSETOperation {
                 st.setString(10, ambiguity_names);
 
                 st.executeUpdate();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 logger.error("sql执行错误");
             } finally {
-                KingBaseUtils.close(st, conn);
+                try{
+                    KingBaseUtils.close(st, conn);
+                }catch(SQLException e){
+                    logger.error("release connection failed");
+                }
+                
                 //KingBaseUtils.close(st, conn);
             }
 
@@ -515,8 +542,13 @@ public class KGASSETOperation {
         } catch (SQLException e) {
             logger.error("sql执行错误");
         }finally {
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            
         }
         boolean re = (recordCount==0);
         return re;
@@ -546,7 +578,12 @@ public class KGASSETOperation {
             logger.error("sql执行错误");
         }finally {
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
         boolean re = (recordCount==0);
         return re;
@@ -576,8 +613,13 @@ public class KGASSETOperation {
         } catch (SQLException e) {
             logger.error("sql执行错误");
         }finally {
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            
         }
 
         return ida;
@@ -607,7 +649,12 @@ public class KGASSETOperation {
             logger.error("sql执行错误");
         }finally {
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
 
         return ida;
@@ -628,10 +675,15 @@ public class KGASSETOperation {
             while(rs.next()){
                 taskId = rs.getString("task_id");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("sql执行错误");
         } finally {
-            KingBaseUtils.close(rs, st, conn);
+            try{
+                KingBaseUtils.close(rs, st, conn);
+            }catch(SQLException ex){
+                logger.error("release connection failed");
+            }
+            
         }
         return taskId;
     }
@@ -646,10 +698,15 @@ public class KGASSETOperation {
             st.setTimestamp(1, record.getEnd_time());
             st.setString(2, record.getTask_id());
             st.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("sql执行错误");
         } finally {
-            KingBaseUtils.close(st, conn);
+            try{
+                KingBaseUtils.close(st, conn);
+            }catch(SQLException e1){
+                logger.error("release connection failed");
+            }
+            
         }
     }
 
@@ -670,10 +727,15 @@ public class KGASSETOperation {
             st.setTimestamp(8, record.getEnd_time());
 
             st.executeUpdate();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("sql执行错误");
         } finally {
-            KingBaseUtils.close(st, conn);
+            try{
+                KingBaseUtils.close(st, conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
     }
 
@@ -699,10 +761,15 @@ public class KGASSETOperation {
                 st.setString(12, result.getAmbiguity_relation_ids());
                 st.setString(13, result.getNeed_delete_relation_ids());
                 st.executeUpdate();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 logger.error("sql执行错误");
             } finally {
-                KingBaseUtils.close(st, conn);
+                try{
+                    KingBaseUtils.close(st, conn);
+                }catch(SQLException e){
+                    logger.error("release connection failed");
+                }
+                
             }
         }
     }
@@ -724,10 +791,15 @@ public class KGASSETOperation {
                 res.put(rule_name, rule_use);
             }
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
             logger.error("sql执行错误");
         } finally {
-            KingBaseUtils.close(st, conn);
+            try{
+                KingBaseUtils.close(st, conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
 
         return res;

@@ -1,12 +1,22 @@
 package com.usst.kgfusion.databaseQuery;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-import com.usst.kgfusion.util.KingBaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.usst.kgfusion.util.KingBaseUtils;
 
 public class ItemQuery {
+    private static final Logger logger = LoggerFactory.getLogger("com.usst.test");
 
     // 测试工具类
 
@@ -56,10 +66,15 @@ public class ItemQuery {
                 s = conn.createStatement();
                 s.executeUpdate(recordSql);
             }catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("sql error");
             }finally {
                 //KingBaseUtils.close(rs,s,conn);
-                KingBaseUtils.close(rs,s,conn);
+                try{
+                    KingBaseUtils.close(rs,s,conn);
+                }catch(SQLException e){
+                    logger.error("release connection failed");
+                }
+                
             }
 
 
@@ -99,10 +114,15 @@ public class ItemQuery {
             
             
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("sql error");
         }finally {
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
         return res;
     }
@@ -171,10 +191,15 @@ public class ItemQuery {
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("sql error");
         }finally {
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
         return res;
     }
@@ -242,10 +267,15 @@ public class ItemQuery {
 
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("sql error");
         }finally {
             //KingBaseUtils.close(rs,st,conn);
-            KingBaseUtils.close(rs,st,conn);
+            try{
+                KingBaseUtils.close(rs,st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
         return res;
     }
@@ -276,10 +306,15 @@ public class ItemQuery {
             //执行sql
             st.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("sql error");
         }finally {
             //KingBaseUtils.close(st,conn);
-            KingBaseUtils.close(st,conn);
+            try{
+                KingBaseUtils.close(st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
         }
     }
 
@@ -303,10 +338,17 @@ public class ItemQuery {
             st.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("sql error");
         }finally {
             //KingBaseUtils.close(st,conn);
-            KingBaseUtils.close(st,conn);
+            try{
+                KingBaseUtils.close(st,conn);
+            }catch(SQLException e){
+                logger.error("release connection failed");
+            }
+            
+            
+            
         }
 
     }

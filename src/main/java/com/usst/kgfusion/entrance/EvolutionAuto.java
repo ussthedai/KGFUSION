@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.usst.kgfusion.constructer.GraphReader;
 import com.usst.kgfusion.databaseQuery.BasicOperation;
 import com.usst.kgfusion.databaseQuery.ItemQuery;
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.util.GenerateUtil;
 import com.usst.kgfusion.util.GraphUtil;
@@ -25,7 +25,7 @@ public class EvolutionAuto {
 
     private static final Logger logger = LoggerFactory.getLogger("com.usst.test");
 
-    public static int executeGraphCluster(String from, String destination, String entityType, String ontologySymbol, String url_relation_classify) throws Exception {
+    public static int executeGraphCluster(String from, String destination, String entityType, String ontologySymbol, String url_relation_classify) throws IOException {
         logger.info("自动演化已接受参数：综合图谱symbol:" + from + ",概念图谱symbol:" + destination);
         int flag = 1;
         KG kg = GraphReader.readGraph(GraphReader.query2(from, true), "zonghe");
@@ -48,9 +48,9 @@ public class EvolutionAuto {
             if(recommendTypeTree != null){
                 BasicOperation.insertAndMergeWithSameName(recommendTypeTree, entityType, ontologySymbol, destination);
                 // update evolutionTag
-                List<Entity> ens = kg.getEntities();
+                List<EntityRaw> ens = kg.getEntities();
                 List<Integer> ids = new ArrayList<>();
-                for(Entity en: ens){
+                for(EntityRaw en: ens){
                     ids.add(Integer.parseInt(en.getEntityId()));
                 }
 
@@ -113,9 +113,9 @@ public class EvolutionAuto {
                 BasicOperation.insertAndMergeWithSameName(triples, entityType, ontologySymbol, destination);
 
                 // update evolutionTag
-                List<Entity> ens = kg.getEntities();
+                List<EntityRaw> ens = kg.getEntities();
                 List<Integer> ids = new ArrayList<>();
-                for(Entity en: ens){
+                for(EntityRaw en: ens){
                     ids.add(Integer.parseInt(en.getEntityId()));
                 }
 
@@ -151,8 +151,8 @@ public class EvolutionAuto {
         WeakComponentClusterer weakComponentClusterer = new WeakComponentClusterer();
         Set<Set<String>> clusterRes = weakComponentClusterer.apply(g);  // 以id划分
 
-        Map<String, Entity> id2Entity = new HashMap<>();
-        for(Entity entity: kg.getEntities()){
+        Map<String, EntityRaw> id2Entity = new HashMap<>();
+        for(EntityRaw entity: kg.getEntities()){
             id2Entity.put(entity.getEntityId(), entity);
         }
 
@@ -172,9 +172,9 @@ public class EvolutionAuto {
                     //更新关系的graphSymbol
                     BasicOperation.setPropertyRelation(destination);
                     // update evolutionTag
-                    List<Entity> ens = schemaExtraction.getKg().getEntities();
+                    List<EntityRaw> ens = schemaExtraction.getKg().getEntities();
                     List<Integer> ids = new ArrayList<>();
-                    for(Entity en: ens){
+                    for(EntityRaw en: ens){
                         ids.add(Integer.parseInt(en.getEntityId()));
                     }
 
@@ -188,7 +188,7 @@ public class EvolutionAuto {
                     Set<String> types = new HashSet<>(recommendTypeTree.values());
                     for(String type: types){
                         List<String> enIds = new ArrayList<>();
-                        for(Entity entity: schemaExtraction.getKg().getEntities()){
+                        for(EntityRaw entity: schemaExtraction.getKg().getEntities()){
                             enIds.add(entity.getEntityId());
                         }
                         Set<String> item_ids = BasicOperation.queryItemIdsByEntityIds(enIds, "zonghe");
@@ -256,7 +256,7 @@ public class EvolutionAuto {
                     }
 
                     List<String> enIds = new ArrayList<>();
-                    for(Entity entity: schemaExtraction.getKg().getEntities()){
+                    for(EntityRaw entity: schemaExtraction.getKg().getEntities()){
                         enIds.add(entity.getEntityId());
                     }
                     Set<String> item_ids = BasicOperation.queryItemIdsByEntityIds(enIds, "zonghe");
@@ -342,9 +342,9 @@ public class EvolutionAuto {
                     BasicOperation.insertAndMergeWithSameName(triples, entityType, ontologySymbol, destination);
 
                     // update evolutionTag
-                    List<Entity> ens = kg.getEntities();
+                    List<EntityRaw> ens = kg.getEntities();
                     List<Integer> ids = new ArrayList<>();
-                    for(Entity en: ens){
+                    for(EntityRaw en: ens){
                         ids.add(Integer.parseInt(en.getEntityId()));
                     }
 
@@ -360,7 +360,7 @@ public class EvolutionAuto {
 
                 for(String recommendType: recommendTypesList){
                     List<String> enIds = new ArrayList<>();
-                    for(Entity entity: schemaExtraction.getKg().getEntities()){
+                    for(EntityRaw entity: schemaExtraction.getKg().getEntities()){
                         enIds.add(entity.getEntityId());
                     }
                     Set<String> item_ids = BasicOperation.queryItemIdsByEntityIds(enIds, "zonghe");

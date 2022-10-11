@@ -399,7 +399,7 @@ public class NodesClusterController {
         for (EntityEasyForNodesCluster entity : entities) {
             on = entity.getEntityType();
             tp = entity.getEntitySubClass();
-            group_key = on + "-" + tp;
+            group_key = on + "\\-" + tp;
             if (groups.containsKey(group_key)) {
                 groups.get(group_key).add(entity);
             } else {
@@ -415,7 +415,7 @@ public class NodesClusterController {
         for (Entry<String, List<EntityEasyForNodesCluster>> entry : groups.entrySet()) {
             // 这个类别下的所聚类公用信息
             String main_key = entry.getKey();
-            String parent_type = entry.getKey().split("-")[0];
+            String parent_type = entry.getKey().split("\\-")[0];
             List<EntityEasyForNodesCluster> ens = entry.getValue();
 
             // 如果是非功能实体，那么该类无法聚类
@@ -445,12 +445,17 @@ public class NodesClusterController {
             // String entityType = main_type.split("-")[1];
 
             // 重写公用信息，ontologySymbol需要从聚类节点中挑选一个填充
-            String entityType = main_type.split("-")[0];
-            String entitySubClass = main_type.split("-")[1];
+            String entityType = main_type.split("\\-")[0];
+            String entitySubClass = main_type.split("\\-")[1];
 
             // 每个big cluster的信息
             ClusterWrapperWrapper2 cls_wwper = new ClusterWrapperWrapper2();
-            cls_wwper.setTypeIdx(type_count++);
+            if(type_count <= Integer.MAX_VALUE-1){
+                cls_wwper.setTypeIdx(type_count++);
+            }else{
+                break;
+            }
+            
 
             List<ClusterWrapper2> cluster_list = new ArrayList<>();
             for (Map<List<String>, List<EntityEasyForNodesCluster>> bigcluster : entry.getValue()) { // 每个小的cluster，包括sourceIds,summary...

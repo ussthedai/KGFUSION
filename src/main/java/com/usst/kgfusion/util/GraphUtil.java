@@ -1,6 +1,6 @@
 package com.usst.kgfusion.util;
 
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import edu.uci.ics.jung.graph.SparseGraph;
 
@@ -50,9 +50,9 @@ public class GraphUtil {
     // 将图谱转换成为node:[], edges:[[]]
     public static SparseGraph transKGtoGraph(KG kg, int id_or_name){
         SparseGraph graph = new SparseGraph();
-        List<Entity> ens = kg.getEntities();
-        Map<Entity, List<Entity>> eds = kg.getEdges();
-        for(Entity en: ens){
+        List<EntityRaw> ens = kg.getEntities();
+        Map<EntityRaw, List<EntityRaw>> eds = kg.getEdges();
+        for(EntityRaw en: ens){
             if(id_or_name == 0){
                 graph.addVertex(en.getEntityId());
             }
@@ -62,13 +62,13 @@ public class GraphUtil {
 
         }
         int num_edge = 0;
-        for(Entity key: eds.keySet()){
-            List<Entity> neis = eds.get(key);
-            for(Entity nei: neis){
-                if(id_or_name == 0){
+        for(EntityRaw key: eds.keySet()){
+            List<EntityRaw> neis = eds.get(key);
+            for(EntityRaw nei: neis){
+                if(id_or_name == 0 && num_edge <= (Long.MAX_VALUE - 1)){
                     graph.addEdge(num_edge++, key.getEntityId(), nei.getEntityId());
                 }
-                if(id_or_name == 1){
+                if(id_or_name == 1 && num_edge <= (Long.MAX_VALUE - 1)){
                     graph.addEdge(num_edge++, key.getName(), nei.getName());
                 }
 
@@ -78,12 +78,12 @@ public class GraphUtil {
         return graph;
     }
 
-    public static List<KG> split(KG kg, Set<Set<String>> clusters, Map<String, Entity> idx2Entity){
+    public static List<KG> split(KG kg, Set<Set<String>> clusters, Map<String, EntityRaw> idx2Entity){
         List<KG> res = new LinkedList<>();
         for(Set<String> cluster: clusters){
-            Map<Entity, List<Entity>> edges = new LinkedHashMap<>();
-            List<Entity> entities = new LinkedList<>();
-            Map<Entity, List<Integer>> directions = new LinkedHashMap<>();
+            Map<EntityRaw, List<EntityRaw>> edges = new LinkedHashMap<>();
+            List<EntityRaw> entities = new LinkedList<>();
+            Map<EntityRaw, List<Integer>> directions = new LinkedHashMap<>();
             for(String enName: cluster){
                 entities.add(idx2Entity.get(enName));
                 if(kg.getEdges().containsKey(idx2Entity.get(enName))){

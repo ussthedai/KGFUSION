@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.usst.kgfusion.databaseQuery.BasicOperation;
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.pojo.Triple;
 
@@ -59,12 +59,12 @@ public class GraphReader {
     public static KG  readGraph(List<Record> records, String graphType){
         KG res = new KG();
         if(records.size() == 0) return res;
-        List<Entity> ens = new ArrayList<>();  // 这个结合中排除了孤立节点，正常图谱中不应该有孤立节点
+        List<EntityRaw> ens = new ArrayList<>();  // 这个结合中排除了孤立节点，正常图谱中不应该有孤立节点
         List<Triple> triples = new ArrayList<>();
         Map<Long, Boolean> visited = new HashMap<>(); // 判断是否需要创建新的实体，根据id，可唯一标识
-        Map<Long, Entity> entityMap = new HashMap<>(); // 方便根据id找到entity，name相同的节点后续会合并
-        Map<Entity, List<Entity>> edges = new LinkedHashMap<>();
-        Map<Entity, List<Integer>> directions = new LinkedHashMap<>();
+        Map<Long, EntityRaw> entityMap = new HashMap<>(); // 方便根据id找到entity，name相同的节点后续会合并
+        Map<EntityRaw, List<EntityRaw>> edges = new LinkedHashMap<>();
+        Map<EntityRaw, List<Integer>> directions = new LinkedHashMap<>();
         int tripleCount = 0;
         for (Record record: records){
             if (record.containsKey("n")){
@@ -72,17 +72,17 @@ public class GraphReader {
                 if (!visited.containsKey(node.id())){
                     visited.put(node.id(), true);
                     if(graphType.equals("zonghe")){
-                        Entity entity = new Entity(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), node.get("ItemId").asString(), "0");
+                        EntityRaw entity = new EntityRaw(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), node.get("ItemId").asString(), "0");
                         entityMap.put(node.id(), entity);
                         ens.add(entity);
                     }
                     if(graphType.equals("raw")){
-                        Entity entity = new Entity(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), node.get("sentence_original_id").asString(), "0");
+                        EntityRaw entity = new EntityRaw(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), node.get("sentence_original_id").asString(), "0");
                         entityMap.put(node.id(), entity);
                         ens.add(entity);
                     }
                     if(graphType.equals("concept")){
-                        Entity entity = new Entity(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), Long.toString(node.get("item_id").asLong()), "0");
+                        EntityRaw entity = new EntityRaw(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), Long.toString(node.get("item_id").asLong()), "0");
                         entityMap.put(node.id(), entity);
                         ens.add(entity);
                     }
@@ -95,17 +95,17 @@ public class GraphReader {
             if (!visited.containsKey(head.id())){
                 visited.put(head.id(), true);
                 if(graphType.equals("raw")){
-                    Entity newEntity = new Entity(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), head.get("sentence_original_id").asString(), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), head.get("sentence_original_id").asString(), "0");
                     entityMap.put(head.id(), newEntity);
                     ens.add(newEntity);
                 }
                 if(graphType.equals("zonghe")){
-                    Entity newEntity = new Entity(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), head.get("ItemId").asString(), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), head.get("ItemId").asString(), "0");
                     entityMap.put(head.id(), newEntity);
                     ens.add(newEntity);
                 }
                 if(graphType.equals("raw")){
-                    Entity newEntity = new Entity(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), Long.toString(head.get("item_id").asLong()), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(), Long.toString(head.get("item_id").asLong()), "0");
                     entityMap.put(head.id(), newEntity);
                     ens.add(newEntity);
                 }
@@ -118,22 +118,26 @@ public class GraphReader {
 //                entityMap.put(tail.id(), newEntity);
 //                ens.add(newEntity);
                 if(graphType.equals("raw")){
-                    Entity newEntity = new Entity(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), tail.get("sentence_original_id").asString(), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), tail.get("sentence_original_id").asString(), "0");
                     entityMap.put(tail.id(), newEntity);
                     ens.add(newEntity);
                 }
                 if(graphType.equals("zonghe")){
-                    Entity newEntity = new Entity(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), tail.get("ItemId").asString(), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), tail.get("ItemId").asString(), "0");
                     entityMap.put(tail.id(), newEntity);
                     ens.add(newEntity);
                 }
                 if(graphType.equals("concept")){
-                    Entity newEntity = new Entity(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), Long.toString(tail.get("item_id").asLong()), "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), Long.toString(tail.get("item_id").asLong()), "0");
                     entityMap.put(tail.id(), newEntity);
                     ens.add(newEntity);
                 }
             }
-            triples.add(new Triple(Integer.toString(tripleCount++),entityMap.get(head.id()), relation, entityMap.get(tail.id())));
+            if(tripleCount <= Integer.MAX_VALUE-1){
+                triples.add(new Triple(Integer.toString(tripleCount++),entityMap.get(head.id()), relation, entityMap.get(tail.id())));
+            }else{
+                break;
+            }
             // add edges and directions
             if (!edges.containsKey(entityMap.get(head.id()))){
                 edges.put(entityMap.get(head.id()), new ArrayList<>());
@@ -159,12 +163,12 @@ public class GraphReader {
     public static KG readGraph2(List<Record> records ){
         KG res = new KG();
         if(records.size() == 0) return res;
-        List<Entity> ens = new ArrayList<>();  // 这个结合中排除了孤立节点，正常图谱中不应该有孤立节点
+        List<EntityRaw> ens = new ArrayList<>();  // 这个结合中排除了孤立节点，正常图谱中不应该有孤立节点
         List<Triple> triples = new ArrayList<>();
         Map<Long, Boolean> visited = new HashMap<>(); // 判断是否需要创建新的实体，根据id，可唯一标识
-        Map<Long, Entity> entityMap = new HashMap<>(); // 方便根据id找到entity，name相同的节点后续会合并
-        Map<Entity, List<Entity>> edges = new LinkedHashMap<>();
-        Map<Entity, List<Integer>> directions = new LinkedHashMap<>();
+        Map<Long, EntityRaw> entityMap = new HashMap<>(); // 方便根据id找到entity，name相同的节点后续会合并
+        Map<EntityRaw, List<EntityRaw>> edges = new LinkedHashMap<>();
+        Map<EntityRaw, List<Integer>> directions = new LinkedHashMap<>();
 
 //        List<Object> headItemids = new ArrayList<>();
 //
@@ -194,7 +198,7 @@ public class GraphReader {
                         System.out.println(typena);
                     }
 
-                    Entity entity = new Entity(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), typena, "0");
+                    EntityRaw entity = new EntityRaw(Long.toString(node.id()), node.get("name").toString(), node.get("entityType").asString(), node.get("entitySubClass").asString(), node.get("graphSymbol").asString(), typena, "0");
                     entityMap.put(node.id(), entity);
                     ens.add(entity);
 
@@ -225,7 +229,7 @@ public class GraphReader {
                     System.out.println(typena);
                 }
 
-                    Entity newEntity = new Entity(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(),typena, "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(),typena, "0");
                     entityMap.put(head.id(), newEntity);
                     ens.add(newEntity);
 
@@ -252,12 +256,16 @@ public class GraphReader {
 
                     System.out.println(typena);
                 }
-                    Entity newEntity = new Entity(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), typena, "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), typena, "0");
                     entityMap.put(tail.id(), newEntity);
                     ens.add(newEntity);
                     //headItemids.addAll(tail.get("itemIds").asList());
             }
-            triples.add(new Triple(Integer.toString(tripleCount++),entityMap.get(head.id()), relation, entityMap.get(tail.id())));
+            if(tripleCount <= Integer.MAX_VALUE-1){
+                triples.add(new Triple(Integer.toString(tripleCount++),entityMap.get(head.id()), relation, entityMap.get(tail.id())));
+            }else{
+                break;
+            }
             // add edges and directions
             if (!edges.containsKey(entityMap.get(head.id()))){
                 edges.put(entityMap.get(head.id()), new ArrayList<>());

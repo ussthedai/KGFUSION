@@ -404,7 +404,7 @@ public class ClusterController {
         for (Entry<String, List<EntityEasy>> entry : groups.entrySet()) {
             // 这个类别下的所聚类公用信息
             String main_key = entry.getKey();
-            String parent_type = entry.getKey().split("-")[1];
+            String parent_type = entry.getKey().split("\\-")[1];
             List<EntityEasy> entities = entry.getValue();
 
             // 如果是非功能实体，那么该类无法聚类
@@ -429,12 +429,17 @@ public class ClusterController {
         for (Entry<String, List<Map<List<String>, List<EntityEasy>>>> entry : res.entrySet()) { // 根据typidx的聚类结果
             String main_type = entry.getKey();
             // 公用信息
-            String ontologySymbol = main_type.split("-")[0];
-            String entityType = main_type.split("-")[1];
+            String ontologySymbol = main_type.split("\\-")[0];
+            String entityType = main_type.split("\\-")[1];
 
             // 每个big cluster的信息
             ClusterWrapperWrapper cls_wwper = new ClusterWrapperWrapper();
-            cls_wwper.setTypeIdx(type_count++);
+            if(type_count <= Integer.MAX_VALUE -1){
+                cls_wwper.setTypeIdx(type_count++);
+            }else{
+                break;
+            }
+            
 
             List<ClusterWrapper> cluster_list = new ArrayList<>();
             for (Map<List<String>, List<EntityEasy>> bigcluster : entry.getValue()) { // 每个小的cluster，包括sourceIds,summary...
@@ -480,17 +485,32 @@ public class ClusterController {
                 long count_index = 0;
                 for (String newNode : recommend_nodes) {
                     N n = new N();
-                    n.setId(count_index++);
+                    if(count_index <= Integer.MAX_VALUE-1){
+                        n.setId(count_index++);
+                    }else{
+                        break;
+                    }
+                    
                     n.setName(newNode);
                     n.setEntityType(entityType);
                     n.setEntitySubClass(newNode);
                     n.setOntologySymbol(ontologySymbol);
                     n.setSubOntologySymbol(ontologySymbol);
 
-                    count_index--;
+                    if(count_index >= Integer.MIN_VALUE-1){
+                        count_index--;
+                    }else{
+                        break;
+                    }
+                    
 
                     R r = new R();
-                    r.setId(count_index++);
+                    if(count_index <= (Integer.MAX_VALUE-1)){
+                        r.setId(count_index++);
+                    }else{
+                        break;
+                    }
+                    
                     r.setName(fix_relation);
                     r.setRelationType(fix_relation);
                     r.setRelationSubType("");

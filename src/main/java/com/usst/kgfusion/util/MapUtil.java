@@ -178,7 +178,11 @@ public class MapUtil {
             if(entry.getKey() - target == 0){
                 break;
             }
-            idx++;
+            if(idx <= Integer.MAX_VALUE-1){
+                idx++;
+            }else{
+                break;
+            }
         }
         return idx;
     }
@@ -190,7 +194,11 @@ public class MapUtil {
             if(entry.getKey().equals(target)){
                 break;
             }
-            idx++;
+            if(idx <= Integer.MAX_VALUE-1){
+                idx++;
+            }else{
+                idx = -1;
+            }
         }
         return idx;
     }

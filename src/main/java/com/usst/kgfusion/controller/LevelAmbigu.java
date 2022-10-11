@@ -304,7 +304,7 @@ class HeXiaoqi{
                     related_ambiguity_names.clear();
 
                     // 环时直接退出
-                    if(from.equals(to) || from == to){
+                    if(from.equals(to)){
                         continue;
                     }
 

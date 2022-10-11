@@ -53,11 +53,11 @@ public class MergeAuto {
             logger.info("复制文档图谱作为综合图谱返回");
             flag = 5;
             KG kg = GraphReader.readGraph2(GraphReader.query2(from, false));
-            List<Entity> rawentitys = kg.getEntities();
+            List<EntityRaw> rawentitys = kg.getEntities();
             Map<Integer, List<Integer>> simMap_int = new HashMap<>();
             int tempidd = 1852022;
             List<Integer> templ = new ArrayList<>();
-            for(Entity entity: rawentitys){
+            for(EntityRaw entity: rawentitys){
                 templ.add(Integer.parseInt(entity.getEntityId()));
             }
             simMap_int.put(tempidd,templ);
@@ -626,11 +626,11 @@ public class MergeAuto {
             logger.info("复制文档图谱作为综合图谱返回");
             flag = 5;
             KG kg = GraphReader.readGraph2(GraphReader.query2(from, false));
-            List<Entity> rawentitys = kg.getEntities();
+            List<EntityRaw> rawentitys = kg.getEntities();
             Map<Integer, List<Integer>> simMap_int = new HashMap<>();
             int tempidd = 1852022;
             List<Integer> templ = new ArrayList<>();
-            for(Entity entity: rawentitys){
+            for(EntityRaw entity: rawentitys){
                 templ.add(Integer.parseInt(entity.getEntityId()));
             }
             simMap_int.put(tempidd,templ);

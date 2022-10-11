@@ -122,12 +122,17 @@ public class EvolutionController {
                     }
                     typeParentMap.put(child, parent);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                logger.error("failed to read file");
             } finally {
 
                 if (br != null) {
-                    br.close();
+                    try{
+                        br.close();
+                    }catch(IOException e){
+                        logger.error("failed to close file");
+                    }
+                    
                 }
 
             }

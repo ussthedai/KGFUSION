@@ -14,27 +14,27 @@ public class Triple {
     private String tripleId;//三元组id
 
     @NonNull
-    private Entity head;//头实体
+    private EntityRaw head;//头实体
     @NonNull
-    private Entity tail;//尾实体
+    private EntityRaw tail;//尾实体
     @NonNull
     private String rela;//关系名称
     // private String itemId;//所属条目的id(从这个条目中抽取出来的)
 
-    public Triple(Entity head, String relation, Entity tail){
+    public Triple(EntityRaw head, String relation, EntityRaw tail){
         this.head = head;
         this.tail = tail;
         this.rela = relation;
     }
 
-    public Triple(String tripleId, Entity head, String relation, Entity tail){
+    public Triple(String tripleId, EntityRaw head, String relation, EntityRaw tail){
         this.tripleId = tripleId;
         this.head = head;
         this.tail = tail;
         this.rela = relation;
     }
 
-    public Triple(Entity head, Entity tail){
+    public Triple(EntityRaw head, EntityRaw tail){
         this.head = head;
         this.tail = tail;
     }

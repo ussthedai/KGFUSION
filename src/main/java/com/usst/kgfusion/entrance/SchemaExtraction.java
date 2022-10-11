@@ -13,7 +13,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.usst.kgfusion.constructer.SchecmaReader;
 import com.usst.kgfusion.module.ForwardPush;
 import com.usst.kgfusion.module.GRM;
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.util.Algorithm;
 import com.usst.kgfusion.util.JsonUtil;
@@ -75,8 +75,8 @@ public class SchemaExtraction {
         if(this.id2name == null){
             this.id2name = new LinkedHashMap<>();
         }
-        List<Entity> entities = kg.getEntities();
-        for (Entity entity : entities) {
+        List<EntityRaw> entities = kg.getEntities();
+        for (EntityRaw entity : entities) {
             queryIds.add(entity.getEntityId());
             id2name.put(entity.getEntityId(), entity.getName());
         }
@@ -94,7 +94,12 @@ public class SchemaExtraction {
             logger.error("读取seed.json错误");
         }finally{
             if(inputStream != null){
-                inputStream.close();
+                try{
+                    inputStream.close();
+                }catch(IOException e){
+                    logger.error("failed to close file");
+                }
+                
             }
         }
         this.seeds = JSON.parseObject(jsonStr, new TypeReference<LinkedHashMap<String, String>>() {}); 
@@ -123,10 +128,19 @@ public class SchemaExtraction {
             logger.error("c_info文件读取错误");
         }finally{
             if(inputStream != null){
-                inputStream.close();
+                try{
+                    inputStream.close();
+                }catch(IOException e){
+                    logger.error("failed to close file");
+                }
             }
             if(br != null){
-                br.close();
+                try{
+                    br.close();
+                }catch(IOException e){
+                    logger.error("failed to close file");
+                }
+                
             }
         }
         
@@ -155,8 +169,8 @@ public class SchemaExtraction {
             this.matchedEntitySet = new HashSet<>();
         }
         Set<String> seedsSet = new HashSet<String>(this.seeds.keySet());
-        List<Entity> ens = this.kg.getEntities();
-        for(Entity en : ens){
+        List<EntityRaw> ens = this.kg.getEntities();
+        for(EntityRaw en : ens){
             if(seedsSet.contains(en.getName())){
                 matchedEntitySet.add(en.getEntityId());
 //                System.out.println(en.getName());
@@ -245,9 +259,9 @@ public class SchemaExtraction {
 
             // use edit distance to return res
             Set<String> res = new HashSet<>();  // select from choices
-            List<Entity> ens = this.kg.getEntities();
+            List<EntityRaw> ens = this.kg.getEntities();
             List<String> ensNames = new ArrayList<>();
-            for(Entity entity: ens){
+            for(EntityRaw entity: ens){
                 ensNames.add(entity.getName());
             }
             double maxValue = 0.0;
@@ -294,9 +308,9 @@ public class SchemaExtraction {
             Map<String, String> res = new LinkedHashMap<String, String>();
 //            Set<String> choices = choice();
             Set<String> choices = new HashSet<>();  // select from choices
-            List<Entity> ens = this.kg.getEntities();
+            List<EntityRaw> ens = this.kg.getEntities();
             List<String> ensNames = new ArrayList<>();
-            for(Entity entity: ens){
+            for(EntityRaw entity: ens){
                 ensNames.add(entity.getName());
             }
 

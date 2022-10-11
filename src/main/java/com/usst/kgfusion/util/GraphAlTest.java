@@ -24,14 +24,16 @@ public class GraphAlTest {
         int num_edge = 0;
         for (int i = 1; i < 10; i++) {
             g.addVertex(i);
+            if(num_edge <= (Integer.MAX_VALUE - 1))
             g.addEdge(num_edge++, 1, i + 1);
-            if (i > 1) {
+            if (i > 1 && num_edge <= (Integer.MAX_VALUE - 1)) {
                 g.addEdge(num_edge++, i, i + 1, EdgeType.DIRECTED);
             }
         }
         g.addVertex(11);
         g.addVertex(12);
         g.addVertex(13);
+        if(num_edge <= (Integer.MAX_VALUE - 1))
         g.addEdge(num_edge++, 11, 12);
         System.out.println("The graph g = " + g.toString());
 

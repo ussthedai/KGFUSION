@@ -61,7 +61,7 @@ public class KingBaseUtils {
     private static Map prop;
 
     @PostConstruct
-    public void setProp() throws Exception {
+    public void setProp() throws Exception{
         prop = new HashMap();
         driver = this._driver;
         url = this._url;
@@ -139,43 +139,43 @@ public class KingBaseUtils {
 
 
     //释放资源
-    public static void close(Statement stmt, Connection conn){
+    public static void close(Statement stmt, Connection conn) throws SQLException{
         if (stmt!=null) {
             try {
                 stmt.close();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
         if (conn!=null){
             try {
                 conn.close();//归还连接
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
     }
 
 
-    public static void close(ResultSet rs, Statement stmt, Connection conn){
+    public static void close(ResultSet rs, Statement stmt, Connection conn) throws SQLException{
         if (rs!=null) {
             try {
                 rs.close();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
         if (stmt!=null) {
             try {
                 stmt.close();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }
         if (conn!=null){
             try {
                 conn.close();//归还连接
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
         }

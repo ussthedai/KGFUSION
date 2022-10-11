@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 
 public class GRM {
@@ -18,15 +18,15 @@ public class GRM {
     // 首先是定义好 节点集合 边集合 和权重
     // 1.初始化 构造一个Egi,Wgi,作为空 Vset是不同类型的集合
     public static Map<String, String> getEdge(KG kg) {
-        Map<Entity, List<Entity>> edgelist = kg.getEdges();
+        Map<EntityRaw, List<EntityRaw>> edgelist = kg.getEdges();
         Map<String, String> edges = new HashMap<>();
-        Iterator<Map.Entry<Entity, List<Entity>>> edgeiter = edgelist.entrySet().iterator();
+        Iterator<Map.Entry<EntityRaw, List<EntityRaw>>> edgeiter = edgelist.entrySet().iterator();
         while (edgeiter.hasNext()) {
-            Map.Entry<Entity, List<Entity>> edgeEntry = edgeiter.next();
-            Entity edgeEnt = edgeEntry.getKey();
+            Map.Entry<EntityRaw, List<EntityRaw>> edgeEntry = edgeiter.next();
+            EntityRaw edgeEnt = edgeEntry.getKey();
             String entityId = edgeEnt.getEntityId();
-            List<Entity> entlist = edgeEntry.getValue();
-            for (Entity entity2 : entlist) {
+            List<EntityRaw> entlist = edgeEntry.getValue();
+            for (EntityRaw entity2 : entlist) {
                 String entityId2 = entity2.getEntityId();
                 edges.put(entityId, entityId2);
             }
@@ -35,10 +35,10 @@ public class GRM {
     }
 
     public static Map<String, Set<String>> getTypeMap(KG kg) {
-        List<Entity> entList = kg.getEntities();
+        List<EntityRaw> entList = kg.getEntities();
         Map<String, Set<String>> typeMap = new HashMap<>();
         Set<String> typeSet = new HashSet<>();
-        for (Entity entity : entList) {
+        for (EntityRaw entity : entList) {
             String typeId = entity.getEntityType();
             String entityId = entity.getEntityId();
 
@@ -70,8 +70,8 @@ public class GRM {
 
     public static Map<String, Set<String>> getTypeEns(KG kg) {
         Map<String, Set<String>> res = new HashMap<>();
-        List<Entity> ens = kg.getEntities();
-        for (Entity entity : ens) {
+        List<EntityRaw> ens = kg.getEntities();
+        for (EntityRaw entity : ens) {
             String id = entity.getEntityId();
             String typeId = entity.getEntityType();
             if (!res.containsKey(typeId)) {
@@ -121,8 +121,8 @@ public class GRM {
 
     public static Map<String, String> getEntityTypeMap(KG kg) {
         Map<String, String> entityTypeMap = new HashMap<>();
-        List<Entity> ens = kg.getEntities();
-        for (Entity entity : ens) {
+        List<EntityRaw> ens = kg.getEntities();
+        for (EntityRaw entity : ens) {
             if (entity.getEntityType() != null) {
                 String type = entity.getEntityType(); // 对于实体类型只有一个的情况
                 entityTypeMap.put(entity.getEntityId(), type);
@@ -134,13 +134,13 @@ public class GRM {
 
     public static Map<String, List<String>> translate(KG kg) {  // outmap
         Map<String, List<String>> res = new LinkedHashMap<>();
-        Map<Entity, List<Entity>> edges = kg.getEdges();
-        Map<Entity, List<Integer>> directions = kg.getDirections();
-        for (Entity en : edges.keySet()) {
-            List<Entity> list = edges.get(en);
+        Map<EntityRaw, List<EntityRaw>> edges = kg.getEdges();
+        Map<EntityRaw, List<Integer>> directions = kg.getDirections();
+        for (EntityRaw en : edges.keySet()) {
+            List<EntityRaw> list = edges.get(en);
             List<Integer> dir = directions.get(en);
             for (int i = 0; i < list.size(); i++) {
-                Entity en2 = list.get(i);
+                EntityRaw en2 = list.get(i);
                 int direction = dir.get(i);
                 if (direction == 0) {
                     if (!res.containsKey(en.getEntityId())) {

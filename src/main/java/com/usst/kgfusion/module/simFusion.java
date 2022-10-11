@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 import com.usst.kgfusion.pojo.Triple;
 
@@ -25,7 +25,7 @@ public class simFusion {
     public List<Triple> Fusion(int k, int k1, List<Triple> tripleList) {
         int tripleSize = tripleList.size();
 //        System.out.println(tripleSize);
-        Entity tempEntity = null;
+        EntityRaw tempEntity = null;
 
 //get k
         for (int i = 0; i < tripleSize; i++) {
@@ -55,12 +55,12 @@ public class simFusion {
         if (tempEntity != null) {
 
             for (int j = 0; j < tripleSize; j++) {
-                Entity entityHId2 = null;
+                EntityRaw entityHId2 = null;
                 Triple tp         = tripleList.get(j);
                 if (tripleList.get(j).getHead() != null) {
                     entityHId2 = tripleList.get(j).getHead();
                 }
-                Entity entityTId2 = null;
+                EntityRaw entityTId2 = null;
                 if (tripleList.get(j).getTail() != null) {
                     entityTId2 = tripleList.get(j).getTail();
                 }
@@ -158,11 +158,11 @@ public class simFusion {
 
 
         List<Triple>                         ts         = tempKg.getTriples();
-        Map<Entity, List<Entity>>  edges      = new HashMap<>();
-        Map<Entity, List<Integer>> directions = new HashMap<>();
+        Map<EntityRaw, List<EntityRaw>>  edges      = new HashMap<>();
+        Map<EntityRaw, List<Integer>> directions = new HashMap<>();
         for (Triple triple : ts) {
-            Entity head = triple.getHead();
-            Entity tail = triple.getTail();
+            EntityRaw head = triple.getHead();
+            EntityRaw tail = triple.getTail();
             if (edges.get(head) == null) edges.put(head, new ArrayList<>());
             if (edges.get(tail) == null) edges.put(tail, new ArrayList<>());
             if (directions.get(head) == null) directions.put(head, new ArrayList<>());

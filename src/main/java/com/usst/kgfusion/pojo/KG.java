@@ -12,17 +12,17 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class KG {
-    private List<Entity> entities; 
+    private List<EntityRaw> entities; 
     private List<Triple> triples;
-    private Map<Entity, List<Entity>> edges;
-    private Map<Entity, List<Integer>> directions; //方向 0 out, 1 in
+    private Map<EntityRaw, List<EntityRaw>> edges;
+    private Map<EntityRaw, List<Integer>> directions; //方向 0 out, 1 in
 
-    public KG(List<Entity> ens, List<Triple> triples){
+    public KG(List<EntityRaw> ens, List<Triple> triples){
         this.entities = ens;
         this.triples = triples;
     }
 
-    public KG(List<Entity> ens, Map<Entity, List<Entity>> edges, Map<Entity, List<Integer>> directions){
+    public KG(List<EntityRaw> ens, Map<EntityRaw, List<EntityRaw>> edges, Map<EntityRaw, List<Integer>> directions){
         this.entities = ens;
         this.edges = edges;
         this.directions = directions;

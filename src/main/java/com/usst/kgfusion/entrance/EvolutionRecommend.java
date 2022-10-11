@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.usst.kgfusion.constructer.GraphReader;
 import com.usst.kgfusion.databaseQuery.BasicOperation;
-import com.usst.kgfusion.pojo.Entity;
+import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
 
 public class EvolutionRecommend {
@@ -13,8 +13,8 @@ public class EvolutionRecommend {
         if(kg.getEntities() == null) return new HashSet<>();
 
         List<Integer> entityIds = new ArrayList<>();
-        List<Entity> entityList = kg.getEntities();
-        for(Entity entity: entityList){
+        List<EntityRaw> entityList = kg.getEntities();
+        for(EntityRaw entity: entityList){
             entityIds.add(Integer.parseInt(entity.getEntityId()));
         }
         Map<Integer,Map<String,Integer>> updateInfo = new HashMap<>();
