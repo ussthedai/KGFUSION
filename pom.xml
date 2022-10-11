@@ -180,7 +180,6 @@
                 </configuration>
             </plugin>
         </plugins>
-
         <finalName>kgfusion</finalName> <!-- 生成的包名 -->
     </build>
 
