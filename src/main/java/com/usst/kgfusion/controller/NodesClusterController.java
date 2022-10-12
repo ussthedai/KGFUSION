@@ -542,7 +542,7 @@ public class NodesClusterController {
                 for (String newNode : recommend_nodes) {
                     N2 n = new N2();
                     n.setName(newNode);
-                    n.setEntityType(entityType);
+                    n.setEntityType(entityType.substring(0, entityType.length()-1));
                     if (entitySubClass.equals("null"))
                         entitySubClass = "";
                     n.setEntitySubClass(entitySubClass);

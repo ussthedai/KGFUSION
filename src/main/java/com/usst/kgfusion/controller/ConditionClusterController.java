@@ -561,7 +561,7 @@ public class ConditionClusterController {
                 for (String newNode : recommend_nodes) {
                     N2 n = new N2();
                     n.setName(newNode);
-                    n.setEntityType(ent);
+                    n.setEntityType(ent.substring(0, entityType.length()-1));
                     if (ensubt.equals("null"))
                         ensubt = "";
                     n.setEntitySubClass(ensubt);
