@@ -12,7 +12,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>kgfusion</name>
     <description>Demo project for Spring Boot</description>
-
+    
     <packaging>war</packaging> <!-- 项目打包方式 -->
 
     <properties>
