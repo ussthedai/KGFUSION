@@ -401,7 +401,7 @@ public class MergeController {
 
                 record.put("synthesize_msg", "综合进行中");
                 KGASSETOperation.insertIntoKgAsset(record);
-                return JSON.toJSONString(new MergeResData(true, 200, "分析成功,复制文档图谱", null));
+                return JSON.toJSONString(new MergeResData(true, 200, "分析成功,无可综合节点", null));
 
             }
             // return JSON.toJSONString(new Res(true, 200, "分析成功", null));
@@ -536,7 +536,15 @@ public class MergeController {
 
     }
 
-
+    @PostMapping("/auto/test")//综合分析测试
+    public String merge_auto_return_sim_test (@RequestBody String jsonStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+        String from = jsonObject.getString("graphSymbolSource");
+        String destination = jsonObject.getString("graphSymbolAim");
+        SimGuiZe sg = new SimGuiZe();
+        sg.RelSim(from,destination);
+        return  null;
+    }
 
 }
 

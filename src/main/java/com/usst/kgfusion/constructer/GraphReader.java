@@ -1,19 +1,19 @@
 package com.usst.kgfusion.constructer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.usst.kgfusion.databaseQuery.BasicOperation;
 import com.usst.kgfusion.pojo.EntityRaw;
 import com.usst.kgfusion.pojo.KG;
+import com.usst.kgfusion.pojo.RelationEasy;
 import com.usst.kgfusion.pojo.Triple;
 
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.types.Node;
+import org.neo4j.driver.v1.types.Relationship;
+
+import javax.management.relation.Relation;
 
 public class GraphReader {
     /**
@@ -229,7 +229,7 @@ public class GraphReader {
                     System.out.println(typena);
                 }
 
-                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").asString(), head.get("entitySubClass").asString(), head.get("graphSymbol").asString(),typena, "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(head.id()), head.get("name").toString(), head.get("entityType").toString(), head.get("entitySubClass").toString(), head.get("graphSymbol").toString(),typena, "0");
                     entityMap.put(head.id(), newEntity);
                     ens.add(newEntity);
 
@@ -256,7 +256,7 @@ public class GraphReader {
 
                     System.out.println(typena);
                 }
-                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").asString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), typena, "0");
+                    EntityRaw newEntity = new EntityRaw(Long.toString(tail.id()), tail.get("name").toString(), tail.get("entityType").toString(), tail.get("entitySubClass").asString(), tail.get("graphSymbol").asString(), typena, "0");
                     entityMap.put(tail.id(), newEntity);
                     ens.add(newEntity);
                     //headItemids.addAll(tail.get("itemIds").asList());
@@ -285,6 +285,71 @@ public class GraphReader {
         res.setTriples(new ArrayList<>(triples));
         res.setEdges(edges);
         res.setDirections(directions);
+        return res;
+    }
+
+    public static Map<Long, List<RelationEasy>> readNodeRel(List<Record> records){
+        Map<Long, List<RelationEasy>> res = new LinkedHashMap<>();
+
+        if(records.size() == 0) return res;
+        Map<Long,RelationEasy> visitedRel = new LinkedHashMap<>();// 判断是否需要创建新的关系对象，根据id，可唯一标识
+
+        for (Record record: records){
+            Node head = record.get("n1").asNode();
+            Node tail = record.get("n2").asNode();
+            Relationship relation = record.get("r").asRelationship();
+
+
+            if (!visitedRel.containsKey(relation.id())){
+
+                RelationEasy re = new RelationEasy(relation.id(), relation.get("name").asString());
+                if(relation.get("relationType")!=null && !relation.get("relationType").toString().equals("NULL")){
+                    re.setRalationType(relation.get("relationType").asString());
+                }
+                if(relation.get("ontologySymbol")!=null && !relation.get("ontologySymbol").toString().equals("NULL")){
+                    re.setOntologySymbol(relation.get("ontologySymbol").asString());
+                }
+                if(relation.get("relationSubType")!=null && !relation.get("relationSubType").toString().equals("NULL")){
+                    re.setRelationSubType(relation.get("relationSubType").asString());
+                }
+                if(relation.get("subOntologySymbol")!=null && !relation.get("subOntologySymbol").toString().equals("NULL")){
+                    re.setSubOntologySymbol(relation.get("subOntologySymbol").asString());
+                }
+
+                List<RelationEasy> temp_list_h = res.getOrDefault(head.id(), new ArrayList<RelationEasy>());
+                if(!temp_list_h.contains(re)){
+                    temp_list_h.add(re);
+                }
+                res.put(head.id(),temp_list_h);
+
+                List<RelationEasy> temp_list_t = res.getOrDefault(tail.id(), new ArrayList<RelationEasy>());
+                if(!temp_list_t.contains(re)){
+                    temp_list_t.add(re);
+                }
+                res.put(tail.id(),temp_list_t);
+
+                visitedRel.put(relation.id(),re);
+
+            }else {
+                RelationEasy relationEasy_old = visitedRel.get(relation.id());
+                List<RelationEasy> temp_list_h = res.getOrDefault(head.id(), new ArrayList<RelationEasy>());
+                if(!temp_list_h.contains(relationEasy_old)){
+                    temp_list_h.add(relationEasy_old);
+                }
+                res.put(head.id(),temp_list_h);
+
+                List<RelationEasy> temp_list_t = res.getOrDefault(tail.id(), new ArrayList<RelationEasy>());
+                if(!temp_list_t.contains(relationEasy_old)){
+                    temp_list_t.add(relationEasy_old);
+                }
+                res.put(tail.id(),temp_list_t);
+
+
+
+            }
+
+
+        }
         return res;
     }
 

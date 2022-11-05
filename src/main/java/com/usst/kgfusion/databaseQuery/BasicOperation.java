@@ -557,6 +557,27 @@ public class BasicOperation{
 
     }
 
+    public static List<Record> queryNodeRel(String graphSymbol){
+        String param = "'" + graphSymbol + "'";
+        Driver driver = Neo4jUtils.getDriver();
+        Session session = driver.session();
+        Transaction transaction = session.beginTransaction();
+        StatementResult result = null;
+
+        result = transaction.run(String.format("match (n1 {graphSymbol:%s})-[r]-(n2 {graphSymbol:%s}) return n1,r,n2", param, param));
+
+        transaction.success();
+        session.close();
+        List<Record> records = new ArrayList<>();
+        while (result.hasNext()) {
+            Record record = (Record) result.next();
+            records.add(record);
+        }
+        // driver.close();
+        return records;
+    }
+
+
 //    public static Boolean judingNullAccordingSrcId(Integer id){
 //        String param = "'" + graphSymbol + "'";
 //        Driver driver = Neo4jUtils.getDriver();
@@ -972,7 +993,40 @@ public class BasicOperation{
     }
 
 
+    public static Map<Integer, Integer> copySubgraphAccSimMap_Old(Map<Integer, List<Integer>> simMap){
+        Map<Integer, Integer> res = new HashMap<>();
+        Driver driver = Neo4jUtils.getDriver();
+        Session session = driver.session();
+        Transaction transaction = session.beginTransaction();
+        StatementResult result = null;
+        // get values from Map<Integer, List<Integer>>
+        Set<Integer> beMergedNodes = new HashSet<>();
+        for(Entry<Integer, List<Integer>> entry: simMap.entrySet()){
+            Integer leftId = entry.getKey();
+            for(Integer rightId: simMap.get(leftId)){
+                beMergedNodes.add(rightId);
+            }
+        }
+//        String sql = "match (n) where id(n) in " + beMergedNodes.toString() + " with collect(n) as ps call apoc.path.subgraphAll(ps, {maxLevel:2}) yield nodes, relationships call apoc.refactor.cloneSubgraph(nodes) yield input, output, error with collect(output) as res, input as inp foreach (t in res | set t.synthesizeTag = 1) return inp, res";
 
+        String sql = "match (n) where id(n) in " + beMergedNodes.toString() + " with collect(n) as ps call apoc.path.subgraphAll(ps, {maxLevel:2}) yield nodes, relationships call apoc.refactor.cloneSubgraph(nodes) yield input, output, error with collect(output) as res, input as inp return inp, res";
+        result = transaction.run(sql);
+        transaction.success();
+        session.close();
+        List<Record> records = new ArrayList<>();
+        while (result.hasNext()) {
+            Record record = (Record) result.next();
+            records.add(record);
+        }
+
+        for(Record record: records){
+            Integer source = Math.toIntExact(record.get("inp").asInt());
+            Integer copyId = Math.toIntExact(record.get("res").get(0).asNode().id());
+            res.put(source, copyId);
+        }
+
+        return res;
+    }
     // todo added by dai
     public static List<String> queryDistinctProp(String graphSymbol, String prop){
         Driver driver = Neo4jUtils.getDriver();
@@ -1139,7 +1193,7 @@ public class BasicOperation{
 //                System.out.println(newnode.get("name"));
 //            }
             String name = newnode.get("name").toString();
-            String type = newnode.get("entityType").asString();
+            String type = newnode.get("entityType").toString();
             res.add(new EnSim(id, name, type));
         }
         transaction.success();

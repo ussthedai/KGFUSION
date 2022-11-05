@@ -8,6 +8,8 @@ import com.usst.kgfusion.databaseQuery.KGASSETOperation;
 import com.usst.kgfusion.entrance.KGsMergeBasedOnContent;
 import com.usst.kgfusion.pojo.EnSim;
 import com.usst.kgfusion.pojo.KG;
+import com.usst.kgfusion.pojo.RelationEasy;
+import com.usst.kgfusion.util.MapUtil;
 import com.usst.kgfusion.util.MatrixUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -324,6 +326,118 @@ public class SimGuiZe {
     }
 
 
+    // todo 基于关系的相似度
+    public Map<String, Map<String,Double>> RelSim(String from, String to){
+
+
+        Map<String, Map<String,Double>> res_1 = new HashMap<>();
+        Map<String, Map<String,Double>> res_2 = new HashMap<>();
+        Map<String, Map<String,Double>> res_3 = new HashMap<>();
+        Map<String, Map<String,Double>> res_4 = new HashMap<>();
+        Map<String, Map<String,Double>> res_5 = new HashMap<>();
+        Map<String, Map<String,Double>> res_rel = new HashMap<>();
+        Map<Long, List<RelationEasy>> froms = GraphReader.readNodeRel(BasicOperation.queryNodeRel(to));
+        Map<Long, List<RelationEasy>> tos = GraphReader.readNodeRel(BasicOperation.queryNodeRel(from));
+        Map<Integer,Double> count_value = new HashMap<>();
+        count_value.put(0,0.0);
+        count_value.put(1,0.3);
+        count_value.put(2,0.6);
+
+        //计算所有关系间的相似度
+        for(Map.Entry<Long, List<RelationEasy>> frome : froms.entrySet()){
+                List<RelationEasy> from_rel =  frome.getValue();
+
+                for(Map.Entry<Long, List<RelationEasy>> toe : tos.entrySet()){
+                    if(!frome.getKey().equals(toe.getKey())){
+                        List<RelationEasy> to_rel =  toe.getValue();
+                        for(RelationEasy ref : from_rel){
+                            for(RelationEasy tof: to_rel){
+                                if(ref.getName()!=null &&tof.getName()!=null){
+                                    if(ref.getName().equals(tof.getName())){
+                                        Map<String,Double> temp1 = res_1.getOrDefault(ref.getId().toString(),new LinkedHashMap<>());
+                                        temp1.put(tof.getId().toString(),0.1);
+                                        res_1.put(ref.getId().toString(),temp1);
+                                    }
+                                }
+                                if(ref.getRalationType()!=null &&tof.getRalationType()!=null){
+                                    if(ref.getRalationType().equals(tof.getRalationType())){
+                                        Map<String,Double> temp2 = res_2.getOrDefault(ref.getId().toString(),new LinkedHashMap<>());
+                                        temp2.put(tof.getId().toString(),0.3);
+                                        res_2.put(ref.getId().toString(),temp2);
+                                    }
+
+                                }
+                                if(ref.getOntologySymbol()!=null &&tof.getOntologySymbol()!=null){
+                                    if( ref.getOntologySymbol().equals(tof.getOntologySymbol()) ){
+                                        Map<String,Double> temp3 = res_3.getOrDefault(ref.getId().toString(),new LinkedHashMap<>());
+                                        temp3.put(tof.getId().toString(),0.3);
+                                        res_3.put(ref.getId().toString(),temp3);
+                                    }
+                                }
+                                if(ref.getRelationSubType()!=null &&tof.getRelationSubType()!=null){
+                                    if(ref.getRelationSubType().equals(tof.getRelationSubType()) ){
+                                        Map<String,Double> temp4 = res_4.getOrDefault(ref.getId().toString(),new LinkedHashMap<>());
+                                        temp4.put(tof.getId().toString(),0.15);
+                                        res_4.put(ref.getId().toString(),temp4);
+                                    }
+                                }
+                                if(ref.getSubOntologySymbol()!=null &&tof.getSubOntologySymbol()!=null){
+
+                                    if(ref.getSubOntologySymbol().equals(tof.getSubOntologySymbol()) ){
+                                        Map<String,Double> temp5 = res_5.getOrDefault(ref.getId().toString(),new LinkedHashMap<>());
+                                        temp5.put(tof.getId().toString(),0.15);
+                                        res_5.put(ref.getId().toString(),temp5);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+            }
+        res_1 = MatrixUtil.add_2map(res_1,res_2);
+        res_1 = MatrixUtil.add_2map(res_1,res_3);
+        res_1 = MatrixUtil.add_2map(res_1,res_4);
+        res_1 = MatrixUtil.add_2map(res_1,res_5);
+
+        for(Map.Entry<Long, List<RelationEasy>> frome : froms.entrySet()){
+            List<RelationEasy> from_rel =  frome.getValue();
+
+            for(Map.Entry<Long, List<RelationEasy>> toe : tos.entrySet()){
+                if(!frome.getKey().equals(toe.getKey())){
+                    int count = 0;
+                    List<RelationEasy> to_rel =  toe.getValue();
+                    for(RelationEasy ref : from_rel){
+                        for(RelationEasy tof: to_rel){
+                            if(res_1.get(ref.getId().toString())!=null && res_1.get(ref.getId().toString()).get(tof.getId().toString())!=null){
+                                if(res_1.get(ref.getId().toString()).get(tof.getId().toString())>=0.24){
+                                    count++;
+                                }
+                            }
+
+                        }
+                    }
+                    if(count>=1 && count<3){
+                        Map<String,Double> temp5 = res_rel.getOrDefault(frome.getKey().toString(),new LinkedHashMap<>());
+                        temp5.put(toe.getKey().toString(),count_value.get(count));
+                        res_rel.put(frome.getKey().toString(),temp5);
+                    }
+                    if(count>=3){
+                        Map<String,Double> temp5 = res_rel.getOrDefault(frome.getKey().toString(),new LinkedHashMap<>());
+                        temp5.put(toe.getKey().toString(),0.8);
+                        res_rel.put(frome.getKey().toString(),temp5);
+                    }
+
+                }
+            }
+        }
+
+//        MatrixUtil.print(res_rel);
+        return res_rel;
+    }
+
+
     // !!!todo 相似度合并
     public Map<String, List<String>> All_sim(String des,String source,int flag ) {
 
@@ -370,7 +484,7 @@ public class SimGuiZe {
         Map<String,Map<String,Double>> linjujiedian = new HashMap<>();
         Map<String,Map<String,Double>> mingchen = new HashMap<>();
         Map<String,Map<String,Double>> leixing = new HashMap<>();
-
+        Map<String,Map<String,Double>> rel = new HashMap<>();
 
 
         double  value_all = 0.0;
@@ -443,6 +557,14 @@ public class SimGuiZe {
                 all_score = MatrixUtil.add_2map(all_score,leixing);
                 value_all += entry1.getValue();
                 logger.info("类型规则计算完成");
+            }
+            if(entry1.getKey().equals("外延关系信息匹配")){
+                rel = RelSim(des,source);
+
+                rel = MatrixUtil.multiply(rel,entry1.getValue());
+                all_score = MatrixUtil.add_2map(all_score,rel);
+                value_all += entry1.getValue();
+                logger.info("外延关系信息匹配规则计算完成");
             }
 
 
@@ -530,18 +652,19 @@ public class SimGuiZe {
 //        suffix_to1_int.addAll(suffix_s);
 //        String res = suffix_to1_int.toString();
 //        System.out.println(res);
-        Map<String,List<String>> test1=  new HashMap<>();
-        List<String> jsad=  new ArrayList<>();
-        jsad.add("sa");
-        jsad.add("nasd");
-        test1.put("lodo",jsad);
-        if(test1.get("lodo")!=null){
-            if(test1.get("lodo").contains("saa")){
-                System.out.println("sad");
-            }else {
-                System.out.println("sadd");
-            }
-        }
+//        Map<String,List<String>> test1=  new HashMap<>();
+//        List<String> jsad=  new ArrayList<>();
+//        jsad.add("sa");
+//        jsad.add("nasd");
+//        test1.put("lodo",jsad);
+//        if(test1.get("lodo")!=null){
+//            if(test1.get("lodo").contains("saa")){
+//                System.out.println("sad");
+//            }else {
+//                System.out.println("sadd");
+//            }
+//        }
 //        System.out.println(suffix_to1);
+
     }
 }

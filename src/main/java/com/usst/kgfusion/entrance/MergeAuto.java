@@ -50,47 +50,51 @@ public class MergeAuto {
 
         if(!check2 && check1){
             logger.info("Neo4j里没有graphsymbol为综合图谱:"+destination+"的图谱");
-            logger.info("复制文档图谱作为综合图谱返回");
-            flag = 5;
-            KG kg = GraphReader.readGraph2(GraphReader.query2(from, false));
-            List<EntityRaw> rawentitys = kg.getEntities();
-            Map<Integer, List<Integer>> simMap_int = new HashMap<>();
-            int tempidd = 1852022;
-            List<Integer> templ = new ArrayList<>();
-            for(EntityRaw entity: rawentitys){
-                templ.add(Integer.parseInt(entity.getEntityId()));
-            }
-            simMap_int.put(tempidd,templ);
-            Map<Integer, Integer> sourceCopyIdMap = BasicOperation.copySubgraphAccSimMap(simMap_int);
-            Map<Integer, Map<String, String>> updateInfo = new HashMap<>();
-            Map<Integer, Map<String, Integer>> updateInfo1 = new HashMap<>();
-            Map<Integer, Map<String, Integer>> updateInfo2 = new HashMap<>();
-            for(Integer copyId: sourceCopyIdMap.values()){  // 源图谱中相似点复制出来连通子图的点
-                Map<String, String> updateInfo_id = new HashMap<>();
-                updateInfo_id.put("graphSymbol", destination);
-                Map<String, Integer> updateInfo_id1 = new HashMap<>();
-                updateInfo_id1.put("synthesizeTag", 1);
-
-                updateInfo.put(copyId, updateInfo_id);
-                updateInfo1.put(copyId,updateInfo_id1);
-            }
-
-            for(Integer simNode: templ){
-                Map<String, Integer> updateInfo_id = new HashMap<>();
-                updateInfo_id.put("canSynthesize", 1);
-                //updateInfo_id.put("alreadySynthesize", 1);
-                updateInfo2.put(simNode, updateInfo_id);
-            }
-
-            BasicOperation.updataByids(updateInfo);
-            BasicOperation.updataByidInteger(updateInfo1);
-            BasicOperation.updataByidInteger(updateInfo2);
-            BasicOperation.setPropertyRelation(destination);
-            logger.info("复制文档图谱可综合节点完成");
-            res.put("flag", flag);
-            res.put("analyse_begin_time", new Timestamp(fenxikaishi));
-            res.put("synthesize_begin_time", new Timestamp(zonghekaishi));
-            return res;
+            logger.info("只分析传入文档图谱内部可综合节点");
+            //flag = 5;
+//            Map<String, List<String>> simMap_merge = new HashMap<>();
+//            logger.info("综合分析开始");
+//            SimGuiZe sg = new SimGuiZe();
+//            simMap_merge = sg.All_sim(destination,from,0);
+////            KGsMergeBasedOnContent kgm = new KGsMergeBasedOnContent(kgs,from,destination);
+////            Map<String, Object> res_step1 = kgm.entrance();
+//            logger.info("综合分析已结束");
+////            simMap_merge = (HashMap<String, List<String>>)res_step1.get("simMap");
+//
+//            if(simMap_merge.size()==0){
+//                logger.info("综合分析未找到可合并节点对");
+//            }else{
+//                for(Map.Entry<String,List<String>> simMap_me : simMap_merge.entrySet()){
+//                    String at = "";
+//                    for(String t : simMap_me.getValue()){
+//                        at = at + t +"," ;
+//                    }
+//                    logger.info("综合图谱节点id："+simMap_me.getKey()+" 合并到该综合图谱节点的文档图谱节点id有:"+at);
+//                }
+//            }
+////            KG kg = GraphReader.readGraph2(GraphReader.query2(from, false));
+////            List<EntityRaw> rawentitys = kg.getEntities();
+////
+////            List<Integer> templ = new ArrayList<>();
+////            for(EntityRaw entity: rawentitys){
+////                templ.add(Integer.parseInt(entity.getEntityId()));
+////            }
+////
+////
+////            Map<Integer, Map<String, Integer>> updateInfo2 = new HashMap<>();
+////            for(Integer simNode: templ){
+////                Map<String, Integer> updateInfo_id = new HashMap<>();
+////                updateInfo_id.put("canSynthesize", 1);
+////                updateInfo2.put(simNode, updateInfo_id);
+////            }
+////
+////            BasicOperation.updataByidInteger(updateInfo2);
+////            BasicOperation.setPropertyRelation(destination);
+////            logger.info("复制文档图谱可综合节点完成");
+//            res.put("flag", flag);
+//            res.put("analyse_begin_time", new Timestamp(fenxikaishi));
+//            res.put("synthesize_begin_time", new Timestamp(zonghekaishi));
+//            return res;
         }
 
 
